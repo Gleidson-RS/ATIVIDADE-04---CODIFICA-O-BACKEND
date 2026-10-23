@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+* {
+  font-family: 'Playfair Display', serif;
+}
+
+:root {
+  --primary: #2ecc71;
+  --primary-hover: #27ae60;
+  --dark: #17221b;
+  --text: #333;
+  --light: #ffffff;
+  --border: #dddddd;
+}
+
+/* CABEÇALHO */
+#cabecalho {
+  width: 100%;
+  min-height: 170px;
+
+  padding: 20px 8%;
+
+  box-sizing: border-box;
+
+  background-color: white;
+
+  border-bottom: 4px solid var(--primary);
+}
+
+/* LOGO */
+#logo {
+  display: flex;
+  align-items: center;
+
+  font-family: Arial, sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+
+  color: var(--primary);
+}
+
+#titulo-logo {
+  margin-left: 8px;
+  padding: 6px;
+
+  border: 2px solid black;
+  border-radius: 90px;
+
+  color: var(--dark);
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* MENU */
+#menu {
+  width: 100%;
+}
+
+/* ÁREA DA PESQUISA + LOGIN + CARRINHO */
+#pesquisa {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  margin: 10px 0 15px;
+}
+
+/* CAMPO DE PESQUISA */
+#pesquisa input {
+  margin-top: 15px;
+
+  flex: 1;
+
+  height: 45px;
+
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 8px 0 0 8px;
+
+  background-color: #f1f1f1;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+/* BOTÃO PESQUISAR */
+#pesquisa button {
+  margin-top: 15px;
+
+  width: 80px;
+  height: 45px;
+
+  border: none;
+  border-radius: 0 8px 8px 0;
+
+  background-color: white;
+
+  color: black;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+#pesquisa button {
+  width: 50px;
+  height: 50px;
+
+  background-image: url('/icon/pesquisa.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px 22px;
+
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+#pesquisa button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* LOGIN / MINHA CONTA */
+#login-cadastro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  margin-left: auto;
+
+  padding-left: 20px;
+  padding-right: 20px;
+
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+
+  font-family: Arial, sans-serif;
+}
+
+#login-cadastro span {
+  font-size: 13px;
+
+  color: var(--text);
+
+  margin-bottom: 4px;
+}
+
+#login-cadastro strong {
+  font-size: 16px;
+
+  color: var(--dark);
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+#login-cadastro strong:hover {
+  color: var(--primary);
+}
+
+/* CARRINHO */
+#carrinho {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-left: 0;
+
+  padding-left: 20px;
+  padding-right: 20px;
+
+  border-right: 1px solid #ccc;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  color: var(--dark);
+
+  white-space: nowrap;
+}
+
+#carrinho strong {
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+#carrinho strong:hover {
+  color: var(--primary);
+}
+
+/* LISTA DO MENU */
+#ul-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 35px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+/* LINKS */
+.lnk-menu {
+  color: var(--dark);
+
+  text-decoration: none;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition: 0.3s;
+}
+
+.lnk-menu:hover {
+  color: var(--primary);
+}
