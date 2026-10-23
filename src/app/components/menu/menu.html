@@ -1,32 +1,36 @@
 <header id="cabecalho">
-    <div id="logo">
-        Produtos <span id="titulo-logo"> Esporte </span>
+  
+  <!-- Linha Superior: Logo + Pesquisa + Ações -->
+  <div class="linha-superior">
+    
+    <div id="logo" routerLink="/home" style="cursor: pointer;">
+      Produtos <span id="titulo-logo"> Esporte </span>
     </div>
 
-    <nav id="menu">
+    <div id="pesquisa">
+      <input type="text" placeholder="O que está buscando?">
+      <button type="submit"></button>
+    </div>
 
-        <div id="pesquisa">
+    <div class="acoes-usuario">
+      <div routerLink="/login" id="login-cadastro">
+        <span>Entrar / Cadastrar</span>
+        <strong>Minha conta</strong>
+      </div>
 
-            <input type="text" placeholder="O que está buscando?">
+      <div id="carrinho" routerLink="/carrinho">
+        <strong>Carrinho</strong>
+      </div>
+    </div>
+    
+  </div>
 
-            <button type="submit"></button>
+  <!-- Linha Inferior: Menu de Navegação -->
+  <nav id="menu">
+    <ul id="ul-menu">
+      <li><a routerLink="/home" class="lnk-menu">Home</a></li>
+      <li><a routerLink="/sobre" class="lnk-menu">Sobre</a></li>
+    </ul>
+  </nav>
 
-
-            <div routerLink="/login" id="login-cadastro">
-                <span routerLink="/login" >Entrar / Cadastrar</span>
-                <strong>Minha conta</strong>
-            </div>
-
-            <div id="carrinho">
-                <strong routerLink="/carrinho" >Carrinho</strong>
-            </div>
-
-        </div>
-
-
-        <ul id="ul-menu">
-            <li><a routerLink="/home" class="lnk-menu">Home</a></li>
-            <li><a routerLink="/sobre" class="lnk-menu">sobre</a></li>
-        </ul>
-    </nav>
 </header>
