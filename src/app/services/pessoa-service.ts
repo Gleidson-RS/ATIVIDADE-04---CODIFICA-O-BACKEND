@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class PessoaService {
 
-  private readonly apiUrl = 'https://localhost:7077/api/PessoaEndereco/';
+  private readonly apiUrl = 'https://localhost:7077/api/PessoaEndereco/'; //OBSERVAÇÃO: sempre que o Swagger é iniciado, o endereço da API muda, então é necessário verificar o endereço correto no Swagger e atualizar aqui.
 
   constructor(private http: HttpClient) { }
 
