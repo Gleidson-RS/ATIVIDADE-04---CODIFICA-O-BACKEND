@@ -3,12 +3,13 @@ import { Home } from './components/home/home';
 import { Sobre } from './components/sobre/sobre';
 import { Login } from './components/login/login';
 import { Carrinho } from './components/carrinho/carrinho';
+import { Cadastro } from './components/cadastro/cadastro';
 
 export const routes: Routes = [
 
     {
         path:"",
-        redirectTo: "tela-inicial",
+        redirectTo: "home",
         pathMatch: "full",
 
     },
@@ -29,5 +30,8 @@ export const routes: Routes = [
         path: "login",
         component: Login },
         
+    { 
+        path: "cadastro",
+        component: Cadastro },
 
 ];

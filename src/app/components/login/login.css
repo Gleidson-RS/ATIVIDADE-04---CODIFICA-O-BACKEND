@@ -38,7 +38,7 @@
 }
 
 .input-group input[type="text"],
-.input-group input[type="password"] {
+.input-group input[type="Senha"] {
   width: 100%;
   padding: 12px;
   border: 1px solid #cccccc;
@@ -74,12 +74,12 @@
   cursor: pointer;
 }
 
-.forgot-password {
+.forgot-Senha {
   color: #000000;
   text-decoration: underline;
 }
 
-.forgot-password:hover {
+.forgot-Senha:hover {
   color: #555555;
 }
 

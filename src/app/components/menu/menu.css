@@ -93,7 +93,7 @@
 }
 
 /* AÇÕES DO USUÁRIO (Login + Carrinho) */
-.acoes-usuario {
+.acoes-nome {
   display: flex;
   align-items: center;
 }
