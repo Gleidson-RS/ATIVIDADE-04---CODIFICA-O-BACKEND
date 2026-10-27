@@ -3,7 +3,8 @@ import { Home } from './components/home/home';
 import { Sobre } from './components/sobre/sobre';
 import { Login } from './components/login/login';
 import { Carrinho } from './components/carrinho/carrinho';
-import { Cadastro } from './components/cadastro/cadastro';
+import { Cadastro } from './components/Cliente/cadastro-cliente/cadastro';
+import { Portal } from './components/portal/portal';
 
 export const routes: Routes = [
 
@@ -33,5 +34,9 @@ export const routes: Routes = [
     { 
         path: "cadastro",
         component: Cadastro },
+
+    { 
+        path: "portal",
+        component: Portal },
 
 ];

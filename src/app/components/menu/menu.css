@@ -219,3 +219,18 @@
   background-color: var(--primary);
   color: var(--light);
 }
+
+#portal{
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding-left: 20px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--dark);
+  white-space: nowrap;
+}
