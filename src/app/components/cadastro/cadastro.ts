@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PessoaService } from '../../services/pessoa-service';
+import { PessoaService } from '../../services/pessoa/pessoa-service';
 import { Pessoas } from '../../models/pessoas/pessoa';
 import { Enderecos } from '../../models/enderecos/enderecos';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro',
-  imports: [FormsModule],
+  imports: [FormsModule,RouterLink],
   templateUrl: './cadastro.html',
   styleUrl: './cadastro.css'
 })

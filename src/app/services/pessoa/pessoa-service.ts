@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { Pessoas } from '../models/pessoas/pessoa';
+import { Pessoas } from '../../models/pessoas/pessoa';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -9,49 +9,41 @@ import { Observable } from 'rxjs';
 })
 export class PessoaService {
 
-  private readonly apiUrl = 'https://localhost:7077/api/PessoaEndereco/'; //OBSERVAÇÃO: sempre que o Swagger é iniciado, o endereço da API muda, então é necessário verificar o endereço correto no Swagger e atualizar aqui.
+  private readonly apiUrl =
+    'https://localhost:7077/api/PessoaEndereco/';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  // Listar todas as pessoas
   listarPessoas(): Observable<Pessoas[]> {
     return this.http.get<Pessoas[]>(this.apiUrl);
   }
 
-  // Listar uma pessoa pelo ID
   listarPessoa(id: number): Observable<Pessoas> {
-    const urlApi = `${this.apiUrl}${id}`;
-    return this.http.get<Pessoas>(urlApi);
+    return this.http.get<Pessoas>(`${this.apiUrl}${id}`);
   }
 
-  // Adicionar uma pessoa
   adicionarPessoa(pessoa: Pessoas): Observable<Pessoas> {
     return this.http.post<Pessoas>(this.apiUrl, pessoa);
   }
 
-  // Excluir uma pessoa pelo ID
   excluirPessoa(id: number): Observable<Pessoas> {
-    const urlApi = `${this.apiUrl}${id}`;
-    return this.http.delete<Pessoas>(urlApi);
+    return this.http.delete<Pessoas>(`${this.apiUrl}${id}`);
   }
 
-  // Alterar uma pessoa
   alterarPessoa(pessoa: Pessoas): Observable<Pessoas> {
-    const urlApi = `${this.apiUrl}${pessoa.id}`;
-    return this.http.put<Pessoas>(urlApi, pessoa);
+    return this.http.put<Pessoas>(
+      `${this.apiUrl}${pessoa.id}`,
+      pessoa
+    );
   }
 
-  // Calcular idade
   calcularIdade(datanascimento: string): number {
-    if (!datanascimento) {
-      return 0;
-    }
+    if (!datanascimento) return 0;
 
     const hoje = new Date();
     const nascimento = new Date(datanascimento);
 
     let idade = hoje.getFullYear() - nascimento.getFullYear();
-
     const mes = hoje.getMonth() - nascimento.getMonth();
 
     if (
@@ -64,7 +56,6 @@ export class PessoaService {
     return idade;
   }
 
-  // Criar objeto pessoa
   criarpessoa(
     id: number,
     nome: string,
@@ -74,7 +65,6 @@ export class PessoaService {
     email: string,
     telefone: number
   ): Pessoas {
-
     const pessoa = new Pessoas();
 
     pessoa.id = id;
@@ -88,8 +78,7 @@ export class PessoaService {
     return pessoa;
   }
 
-  // Limpar pessoa
-  limparpessoa(): Pessoas {
+  limpapessoa(): Pessoas {
     const pessoa = new Pessoas();
 
     pessoa.id = 0;

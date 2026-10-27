@@ -1,31 +1,53 @@
-<div class="login-wrapper">
-  <div class="login-container">
-    <h2>Acesse sua conta</h2>
-    
-    <form>
-      <div class="input-group">
-        <label for="email">E-mail ou Usuário</label>
-        <input type="text" id="email" placeholder="Digite seu e-mail" required>
-      </div>
-      
-      <div class="input-group">
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" placeholder="Digite sua senha" required>
-      </div>
-      
-      <div class="options-group">
-        <label class="checkbox-label">
-          <input type="checkbox" name="remember">
-          Manter logado
-        </label>
-        <a href="#" class="forgot-Senha">Esqueceu a senha?</a>
-      </div>
-      
-      <button type="submit" class="btn-login">Entrar</button>
-    </form>
-    
-    <div class="register-prompt">
-      Ainda não tem conta? <a href="/cadastro">Cadastre-se</a>
-    </div>
+<form (ngSubmit)="entrar()" #formLogin="ngForm">
+
+  <div class="input-group">
+    <label for="email">E-mail</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      placeholder="Digite seu e-mail"
+      [(ngModel)]="email"
+      required
+      email
+    >
   </div>
-</div>
+
+  <div class="input-group">
+    <label for="CPF">CPF</label>
+    <input
+      type="text"
+      id="CPF"
+      name="CPF"
+      placeholder="Digite seu CPF"
+      [(ngModel)]="CPF"
+      required
+    >
+  </div>
+
+  <div class="options-group">
+    <label class="checkbox-label">
+      <input
+        type="checkbox"
+        name="manterLogado"
+        [(ngModel)]="manterLogado"
+      >
+      Manter logado
+    </label>
+  </div>
+
+  @if (mensagem) {
+    <p [style.color]="erro ? '#e53935' : 'green'">
+      {{ mensagem }}
+    </p>
+  }
+
+  <button
+    type="submit"
+    class="btn-login"
+    [disabled]="formLogin.invalid || carregando"
+  >
+    {{ carregando ? 'Verificando...' : 'Entrar' }}
+  </button>
+
+</form>
