@@ -174,3 +174,48 @@
 .lnk-menu:hover {
   color: var(--primary);
 }
+
+/* USUÁRIO LOGADO */
+#usuario-logado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  padding-right: 20px;
+  border-right: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+}
+
+#usuario-logado .saudacao {
+  font-size: 13px;
+  color: var(--text);
+}
+
+#usuario-logado .nome-usuario {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+  color: var(--dark);
+}
+
+#usuario-logado .btn-sair {
+  margin-top: 4px;
+  padding: 4px 14px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--primary-hover);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#usuario-logado .btn-sair:hover {
+  background-color: var(--primary);
+  color: var(--light);
+}

@@ -1,5 +1,4 @@
-
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -18,9 +17,9 @@ export class Login {
   CPF = '';
   manterLogado = false;
 
-  mensagem = '';
-  erro = false;
-  carregando = false;
+  mensagem = signal('');
+  erro = signal(false);
+  carregando = signal(false);
 
   constructor(
     private loginService: LoginService,
@@ -28,31 +27,31 @@ export class Login {
   ) {}
 
   entrar(): void {
-    if (this.carregando) return;
+    if (this.carregando()) return;
 
-    this.mensagem = '';
-    this.erro = false;
+    this.mensagem.set('');
+    this.erro.set(false);
 
     if (!this.email.trim() || !this.CPF.trim()) {
-      this.mensagem = 'Preencha o e-mail e o CPF.';
-      this.erro = true;
+      this.mensagem.set('Preencha o e-mail e o CPF.');
+      this.erro.set(true);
       return;
     }
 
-    this.carregando = true;
+    this.carregando.set(true);
 
     this.loginService
       .autenticar(this.email, this.CPF)
       .pipe(
         finalize(() => {
-          this.carregando = false;
+          this.carregando.set(false);
         })
       )
       .subscribe({
         next: (pessoa) => {
           if (!pessoa) {
-            this.mensagem = 'E-mail ou CPF incorreto.';
-            this.erro = true;
+            this.mensagem.set('E-mail ou CPF incorreto.');
+            this.erro.set(true);
             return;
           }
 
@@ -61,15 +60,16 @@ export class Login {
             this.manterLogado
           );
 
-          this.router.navigate(['/tela-inicial']);
+          this.router.navigate(['/home']);
         },
 
         error: (erroApi) => {
           console.error('Erro ao realizar login:', erroApi);
 
-          this.mensagem =
-            'Não foi possível consultar a API. Verifique a URL e se o backend está funcionando.';
-          this.erro = true;
+          this.mensagem.set(
+            'Não foi possível consultar a API. Verifique a URL e se o backend está funcionando.'
+          );
+          this.erro.set(true);
         }
       });
   }

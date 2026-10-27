@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { LoginService } from '../../services/login/login';
 
 @Component({
   imports: [RouterLink],
@@ -8,4 +8,14 @@ import { RouterLink } from '@angular/router';
   styleUrl: './menu.css',
   templateUrl: './menu.html',
 })
-export class Menu {}
+export class Menu {
+  private loginService = inject(LoginService);
+  private router = inject(Router);
+
+  usuario = this.loginService.pessoaLogada;
+
+  sair(): void {
+    this.loginService.encerrarSessao();
+    this.router.navigate(['/login']);
+  }
+}

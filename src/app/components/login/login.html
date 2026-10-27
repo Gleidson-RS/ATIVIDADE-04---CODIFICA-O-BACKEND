@@ -36,18 +36,18 @@
     </label>
   </div>
 
-  @if (mensagem) {
-    <p [style.color]="erro ? '#e53935' : 'green'">
-      {{ mensagem }}
+  @if (mensagem()) {
+    <p [style.color]="erro() ? '#e53935' : 'green'">
+      {{ mensagem() }}
     </p>
   }
 
   <button
     type="submit"
     class="btn-login"
-    [disabled]="formLogin.invalid || carregando"
+    [disabled]="formLogin.invalid || carregando()"
   >
-    {{ carregando ? 'Verificando...' : 'Entrar' }}
+    {{ carregando() ? 'Verificando...' : 'Entrar' }}
   </button>
 
 </form>
