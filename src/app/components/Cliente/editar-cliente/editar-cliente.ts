@@ -55,7 +55,16 @@ export class EditarCliente implements OnInit {
     this.id = id;
 
     this.pessoaService.listarPessoa(id).subscribe({
-      next: (dados: any) => {
+      next: (resposta: any) => {
+        // A API devolve uma lista com 1 item; pega o primeiro
+        const dados = Array.isArray(resposta) ? resposta[0] : resposta;
+
+        if (!dados) {
+          this.erro.set('Pessoa não encontrada.');
+          this.carregando.set(false);
+          return;
+        }
+
         this.nome = dados.nome ?? '';
         this.CPF = String(dados.cpf ?? dados.CPF ?? '');
         // <input type="date"> só aceita yyyy-MM-dd; a API manda "2000-01-31T00:00:00"
@@ -93,7 +102,7 @@ export class EditarCliente implements OnInit {
     // Reaproveita o endereço original (com o id dele) e troca só os campos editados
     const endereco: any = { ...(this.enderecoOriginal ?? {}) };
     delete endereco.cep;
-    endereco.CEP = this.CEP;
+    endereco.CEP = this.CEP.replace(/\D/g, ''); // a coluna cep tem 8 caracteres
     endereco.numero = String(this.Numero);
     endereco.complemento = this.Complemento;
 

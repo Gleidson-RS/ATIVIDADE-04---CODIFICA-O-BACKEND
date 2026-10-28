@@ -68,7 +68,7 @@ export class ListarClientes implements OnInit {
   }
 
   // Exclui o cliente e atualiza a lista
-  excluirCliente(id: number): void {
+  excluirCliente(cliente: Pessoas): void {
     const confirmado = confirm(
       'Deseja realmente excluir este cliente?'
     );
@@ -79,7 +79,7 @@ export class ListarClientes implements OnInit {
 
     this.erro.set('');
 
-    this.clienteService.excluirCliente(id).subscribe({
+    this.clienteService.excluirCliente(cliente).subscribe({
       next: () => {
         // Atualiza a tela consultando novamente a API
         this.listarClientes();

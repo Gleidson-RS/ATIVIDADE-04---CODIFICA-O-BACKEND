@@ -31,7 +31,16 @@ export class ConsultarCliente implements OnInit {
     }
 
     this.pessoaService.listarPessoa(id).subscribe({
-      next: (dados: any) => {
+      next: (resposta: any) => {
+        // A API devolve uma lista com 1 item; pega o primeiro
+        const dados = Array.isArray(resposta) ? resposta[0] : resposta;
+
+        if (!dados) {
+          this.erro.set('Pessoa não encontrada.');
+          this.carregando.set(false);
+          return;
+        }
+
         this.pessoa.set({
           id: dados.idPessoa ?? dados.id ?? id,
           nome: dados.nome,
