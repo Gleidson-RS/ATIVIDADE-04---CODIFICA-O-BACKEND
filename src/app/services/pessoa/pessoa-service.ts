@@ -26,15 +26,14 @@ export class PessoaService {
     return this.http.post<Pessoas>(this.apiUrl, pessoa);
   }
 
-  excluirPessoa(id: number): Observable<Pessoas> {
-    return this.http.delete<Pessoas>(`${this.apiUrl}${id}`);
+  // responseType 'text': se a API devolver 204 / texto simples em vez de JSON,
+  // o HttpClient não dá erro de parse e o "next" é chamado normalmente.
+  excluirPessoa(id: number): Observable<string> {
+    return this.http.delete(`${this.apiUrl}${id}`, { responseType: 'text' });
   }
 
-  alterarPessoa(pessoa: Pessoas): Observable<Pessoas> {
-    return this.http.put<Pessoas>(
-      `${this.apiUrl}${pessoa.id}`,
-      pessoa
-    );
+  alterarPessoa(id: number, pessoa: unknown): Observable<string> {
+    return this.http.put(`${this.apiUrl}${id}`, pessoa, { responseType: 'text' });
   }
 
   calcularIdade(datanascimento: string): number {
