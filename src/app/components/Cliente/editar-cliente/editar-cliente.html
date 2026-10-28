@@ -1,0 +1,61 @@
+
+<h2>Editar pessoa</h2>
+
+@if (carregando()) {
+  <p>Carregando dados...</p>
+} @else {
+  @if (erro()) {
+    <p class="error-message">{{ erro() }}</p>
+  }
+
+  <form (ngSubmit)="salvar()">
+    <label for="nome">Nome</label>
+    <input id="nome" name="nome" [(ngModel)]="nome" required>
+
+    <label for="cpf">CPF</label>
+    <input id="cpf" name="CPF" type="text" maxlength="11" [(ngModel)]="CPF" required>
+
+    <label for="data">Data de nascimento</label>
+    <input id="data" name="datanascimento" type="date"
+      [(ngModel)]="datanascimento" required>
+
+    <label for="sexo">Sexo</label>
+    <select id="sexo" name="sexo" [(ngModel)]="sexo" required>
+      <option value="">Selecione</option>
+      <option value="M">Masculino</option>
+      <option value="F">Feminino</option>
+    </select>
+
+    <label for="email">E-mail</label>
+    <input id="email" name="email" type="email"
+      [(ngModel)]="email" required>
+
+    <label for="telefone">Telefone</label>
+    <input id="telefone" name="telefone" type="tel"
+      [(ngModel)]="telefone" required>
+
+    <label for="ativo">Pessoa ativa?</label>
+    <select id="ativo" name="AtivoPessoa" [(ngModel)]="AtivoPessoa">
+      <option value="S">Sim</option>
+      <option value="N">Não</option>
+    </select>
+
+    <h3>Endereço</h3>
+
+    <label for="cep">CEP</label>
+    <input id="cep" name="CEP" [(ngModel)]="CEP">
+
+    <label for="numero">Número</label>
+    <input id="numero" name="Numero" [(ngModel)]="Numero">
+
+    <label for="complemento">Complemento</label>
+    <input id="complemento" name="Complemento"
+      [(ngModel)]="Complemento">
+
+    <button type="submit" [disabled]="salvando()">
+      {{ salvando() ? 'Salvando...' : 'Salvar alterações' }}
+    </button>
+
+    <a routerLink="/listar-clientes">Cancelar e voltar</a>
+  </form>
+}

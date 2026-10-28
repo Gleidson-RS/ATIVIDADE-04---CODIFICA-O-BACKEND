@@ -1,0 +1,125 @@
+<div class="portal-wrapper">
+
+  <header class="portal-header">
+    <div class="header-content">
+      <div>
+        <h1>Portal do Funcionário</h1>
+        <p>Gerenciamento de clientes</p>
+      </div>
+
+      <span class="user-badge">Área administrativa</span>
+    </div>
+  </header>
+
+  <main class="portal-content">
+
+    <section class="welcome-section">
+      <h2>Bem-vindo ao painel</h2>
+      <p>
+        Gerencie os clientes cadastrados no sistema.
+        Escolha uma das opções abaixo para continuar.
+      </p>
+    </section>
+
+    <section class="actions-section">
+
+      <h3>Gerenciamento de clientes</h3>
+
+      <div class="actions-grid">
+
+        <!-- Cadastro -->
+        <article class="action-card">
+          <div class="card-icon">+</div>
+
+          <h4>Cadastrar cliente</h4>
+
+          <p>
+            Cadastre um novo cliente, preenchendo seus dados
+            pessoais e informações de endereço.
+          </p>
+
+          <button routerLink="/cadastro" class="action-button">
+            Novo cadastro
+          </button>
+          
+        </article>
+
+        <!-- Listagem -->
+        <article class="action-card">
+          <div class="card-icon">
+            <span>&#9776;</span>
+          </div>
+
+          <h4>Listar clientes</h4>
+
+          <p>
+            Visualize os clientes cadastrados e consulte
+            suas principais informações.
+          </p>
+
+          <button
+            routerLink="/listar-clientes"
+            class="action-button"
+          >
+            Ver clientes
+          </button>
+        </article>
+
+        <!-- Consulta -->
+        <article class="action-card">
+          <div class="card-icon">&#9906;</div>
+
+          <h4>Consultar cliente</h4>
+
+          <p>
+            Localize um cliente específico para visualizar
+            seus dados cadastrais.
+          </p>
+
+          <button
+            routerLink="/listar-clientes"
+            class="action-button"
+          >
+            Consultar
+          </button>
+        </article>
+
+        <!-- Edição -->
+        <article class="action-card">
+          <div class="card-icon">&#9998;</div>
+
+          <h4>Editar cliente</h4>
+
+          <p>
+            Atualize informações de clientes já cadastrados,
+            mantendo os dados corretos.
+          </p>
+
+          <button
+            routerLink="/listar-clientes"
+            class="action-button"
+          >
+            Editar cadastro
+          </button>
+        </article>
+
+      </div>
+
+    </section>
+
+    <section class="info-section">
+      <h3>Informações do sistema</h3>
+
+      <p>
+        Utilize este painel para realizar as operações
+        de cadastro e manutenção dos dados dos clientes.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="portal-footer">
+    <p>Portal do Funcionário &copy; 2026</p>
+  </footer>
+
+</div>

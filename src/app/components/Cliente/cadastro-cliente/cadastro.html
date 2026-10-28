@@ -1,0 +1,132 @@
+<div class="login-wrapper">
+  <div class="login-container">
+
+    <h2>Crie sua conta</h2>
+
+    <form (ngSubmit)="cadastrar()">
+
+      <div class="input-group">
+        <label for="nome">Nome completo</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          [(ngModel)]="nome"
+          placeholder="Digite seu nome completo"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="email">E-mail</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="Digite seu e-mail"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="CPF">CPF</label>
+        <input
+          type="text"
+          id="CPF"
+          name="CPF"
+          [(ngModel)]="CPF"
+          placeholder="Digite seu CPF"
+          maxlength="11"
+          minlength="11"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="datanascimento">Data de nascimento</label>
+        <input
+          type="date"
+          id="datanascimento"
+          name="datanascimento"
+          [(ngModel)]="datanascimento"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="sexo">Sexo</label>
+        <select
+          id="sexo"
+          name="sexo"
+          [(ngModel)]="sexo"
+          required
+        >
+          <option value="" disabled>Selecione</option>
+          <option value="M">Masculino</option>
+          <option value="F">Feminino</option>
+          <option value="O">Outro</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="telefone">Telefone</label>
+        <input
+          type="tel"
+          id="telefone"
+          name="telefone"
+          [(ngModel)]="telefone"
+          placeholder="Digite seu telefone"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="CEP">CEP</label>
+        <input
+        type="text"
+        name="CEP"
+        [(ngModel)]="CEP"
+        maxlength="9"
+        minlength="8"
+        placeholder="49000-000"
+        required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="Numero">Número do endereço</label>
+        <input
+          type="number"
+          id="Numero"
+          name="Numero"
+          [(ngModel)]="Numero"
+          placeholder="Número da residência"
+          required
+        >
+      </div>
+
+      <div class="input-group">
+        <label for="Complemento">Complemento</label>
+        <input
+          type="text"
+          id="Complemento"
+          name="Complemento"
+          [(ngModel)]="Complemento"
+          placeholder="Apartamento, bloco etc. (opcional)"
+        >
+      </div>
+
+      <button type="submit" class="btn-login">
+        Cadastrar
+      </button>
+
+    </form>
+
+    <div class="register-prompt">
+      Já tem uma conta?
+      <a routerLink="/login">Entrar</a>
+    </div>
+
+  </div>
+</div>

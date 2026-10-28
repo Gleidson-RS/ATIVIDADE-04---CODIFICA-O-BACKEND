@@ -1,0 +1,35 @@
+
+<h2>Consultar pessoa</h2>
+
+@if (carregando()) {
+  <p>Carregando dados...</p>
+} @else if (erro()) {
+  <p class="error-message">{{ erro() }}</p>
+} @else if (pessoa(); as p) {
+  <p><strong>ID:</strong> {{ p.id }}</p>
+  <p><strong>Nome:</strong> {{ p.nome }}</p>
+  <p><strong>CPF:</strong> {{ p.CPF }}</p>
+  <p><strong>Data de nascimento:</strong> {{ p.datanascimento | date:'dd/MM/yyyy' }}</p>
+  <p><strong>Sexo:</strong> {{ p.sexo }}</p>
+  <p><strong>E-mail:</strong> {{ p.email }}</p>
+  <p><strong>Telefone:</strong> {{ p.telefone }}</p>
+  <p><strong>Ativo:</strong> {{ p.AtivoPessoa }}</p>
+
+  <h3>Endereços</h3>
+
+  @for (endereco of p.Enderecos; track $index) {
+    <div>
+      <p><strong>CEP:</strong> {{ endereco.cep ?? endereco.CEP }}</p>
+      <p><strong>Número:</strong> {{ endereco.numero }}</p>
+      <p><strong>Complemento:</strong> {{ endereco.complemento }}</p>
+    </div>
+  } @empty {
+    <p>Nenhum endereço informado.</p>
+  }
+
+  <a [routerLink]="['/editar-cliente', p.id]">Editar pessoa</a>
+}
+
+<p>
+  <a routerLink="/listar-clientes">Voltar para a lista</a>
+</p>

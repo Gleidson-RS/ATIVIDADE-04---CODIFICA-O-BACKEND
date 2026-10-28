@@ -1,0 +1,122 @@
+
+<div class="portal-wrapper">
+
+  <header class="portal-header">
+    <div class="header-content">
+      <div>
+        <h1>Portal do Funcionário</h1>
+        <p>Gerenciamento de clientes</p>
+      </div>
+
+      <button routerLink="/portal" class="btn-voltar">
+        Voltar ao painel
+      </button>
+
+    </div>
+  </header>
+
+  <main class="portal-content">
+
+    <section class="page-heading">
+      <h2>Clientes cadastrados</h2>
+      <p>Visualize e gerencie os clientes registrados no sistema.</p>
+    </section>
+
+    <section class="list-container">
+
+      <div class="list-header">
+        <h3>Lista de clientes</h3>
+
+        <button routerLink="/cadastro" class="btn-primary">
+          + Novo cliente
+        </button>
+
+        <button
+          type="button"
+          class="btn-voltar"
+          [disabled]="carregando()"
+          (click)="listarClientes()">
+          {{ carregando() ? 'Carregando...' : 'Recarregar clientes' }}
+</button>
+      </div>
+
+<p>Clientes carregados: {{ clientes().length }}</p>
+
+      @if (erro()) {
+        <p class="error-message">{{ erro() }}</p>
+      }
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (cliente of clientes(); track $index) {
+              <tr>
+                <td>{{ cliente.id }}</td>
+                <td>{{ cliente.nome }}</td>
+                <td>{{ cliente.CPF }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    [routerLink]="['/consultar-cliente', cliente.id]">
+                    Consultar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-secondary"
+                    [routerLink]="['/editar-cliente', cliente.id]">
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-danger"
+                    (click)="excluirCliente(cliente.id)">
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              @if (!carregando() && !erro()) {
+                <tr>
+                  <td colspan="6" class="empty-message">
+                    Nenhum cliente cadastrado.
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <section class="info-section">
+      <h3>Sobre esta tela</h3>
+      <p>
+        Nesta página você poderá visualizar os clientes cadastrados,
+        consultar seus dados, editar informações ou excluir registros.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="portal-footer">
+    <p>Portal do Funcionário &copy; 2026</p>
+  </footer>
+
+</div>
