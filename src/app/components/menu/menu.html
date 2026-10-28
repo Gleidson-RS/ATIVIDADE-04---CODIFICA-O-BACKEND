@@ -1,6 +1,5 @@
 <header id="cabecalho">
 
-  <!-- Linha Superior: Logo + Pesquisa + Ações -->
   <div class="linha-superior">
 
     <div id="logo" routerLink="/home" style="cursor: pointer;">
@@ -12,32 +11,34 @@
       <button type="submit"></button>
     </div>
 
-<div class="acoes-nome">
+    <div class="acoes-nome">
 
-  <div id="portal">
-    <strong>Portal do Funcionário</strong>
-    <button routerLink="/portal" >Acessar</button>
-  </div>
+      <div id="portal">
+        <strong>Portal do Funcionário</strong>
+        <button routerLink="/portal" class="action-button">Acessar</button>
+      </div>
 
-  @if (usuario(); as pessoa) {
-    <div id="usuario-logado">
-      <span class="saudacao">Olá,</span>
-      <strong class="nome-usuario" [title]="pessoa.nome">{{ pessoa.nome }}</strong>
-      <button type="button" class="btn-sair" (click)="sair()">Sair</button>
+      @if (usuario(); as pessoa) {
+        <div id="usuario-logado">
+          <span class="saudacao">Olá,</span>
+          <strong class="nome-usuario" [title]="pessoa.nome">{{ pessoa.nome }}</strong>
+          <button type="button" class="btn-sair" (click)="sair()">Sair</button>
+        </div>
+      } @else {
+        <div id="login-cadastro">
+          <strong>Minha conta</strong>
+          <div class="botoes-acao">
+            <button routerLink="/login" class="action-button">Entrar</button>
+            <button routerLink="/cadastro" class="action-button">Cadastrar</button>
+          </div>
+        </div>
+      }
+
+      <div id="carrinho" routerLink="/carrinho">
+        <strong>Carrinho</strong>
+      </div>
+
     </div>
-  } @else {
-    <div id="login-cadastro">
-      <strong>Minha conta</strong>
-      <button routerLink="/login" >Entrar</button>
-      <button routerLink="/cadastro"> Cadastrar</button>
-    </div>
-  }
-
-  <div id="carrinho" routerLink="/carrinho">
-    <strong>Carrinho</strong>
-  </div>
-
-</div>
 
   </div>
 

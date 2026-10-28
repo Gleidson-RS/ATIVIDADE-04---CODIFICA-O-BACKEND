@@ -2,7 +2,7 @@
 
 * {
   font-family: 'Playfair Display', serif;
-  box-sizing: border-box; /* Garante que os paddings não quebrem a largura */
+  box-sizing: border-box; 
 }
 
 :root {
@@ -20,10 +20,10 @@
   min-height: 170px;
   padding: 20px 8%;
   background-color: var(--light);
-  border-bottom: 4px solid var(--primary);
+  border-bottom: 4px solid #000000; /* Alterado para combinar com os botões */
 }
 
-/* LINHA SUPERIOR (Flexbox para alinhar tudo na horizontal) */
+/* LINHA SUPERIOR */
 .linha-superior {
   display: flex;
   align-items: center;
@@ -40,15 +40,15 @@
   font-family: Arial, sans-serif;
   font-size: 36px;
   font-weight: 800;
-  color: var(--primary);
+  color: #000000;
 }
 
 #titulo-logo {
   margin-left: 8px;
   padding: 6px;
-  border: 2px solid var(--dark);
+  border: 2px solid #000000;
   border-radius: 90px;
-  color: var(--dark);
+  color: #000000;
   font-size: 24px;
   font-weight: 700;
 }
@@ -58,7 +58,7 @@
   display: flex;
   align-items: center;
   flex: 1;
-  max-width: 500px; /* Limita a largura da barra para não esmagar os botões */
+  max-width: 500px; 
 }
 
 #pesquisa input {
@@ -89,20 +89,38 @@
 }
 
 #pesquisa button:hover {
-  background-color: var(--primary-hover);
+  background-color: #dddddd;
 }
 
-/* AÇÕES DO USUÁRIO (Login + Carrinho) */
+/* AÇÕES DO USUÁRIO */
 .acoes-nome {
   display: flex;
   align-items: center;
+}
+
+/* PORTAL */
+#portal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding-right: 20px;
+  border-right: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--dark);
+  white-space: nowrap;
 }
 
 /* LOGIN / MINHA CONTA */
 #login-cadastro {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
   padding-right: 20px;
   border-right: 1px solid #ccc;
   font-family: Arial, sans-serif;
@@ -122,57 +140,46 @@
 }
 
 #login-cadastro strong:hover {
-  color: var(--primary);
+  color: #000000;
 }
 
-/* CARRINHO */
-#carrinho {
+/* BOTÕES DE AÇÃO (Alinhamento) */
+.botoes-acao {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 20px;
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--dark);
-  white-space: nowrap;
+  gap: 10px;
 }
 
-#carrinho strong {
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-#carrinho strong:hover {
-  color: var(--primary);
-}
-
-/* MENU / LINKS */
-#menu {
-  width: 100%;
-}
-
-#ul-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 35px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.lnk-menu {
-  color: var(--dark);
-  text-decoration: none;
-  font-family: Arial, sans-serif;
-  font-size: 20px;
+/* BOTÕES (Base fornecida) */
+.action-button {
+  margin-left: 15px;
+  display: inline-block;
+  padding: 12px 18px;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-size: 14px;
   font-weight: 600;
-  transition: 0.3s;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.lnk-menu:hover {
-  color: var(--primary);
+.action-button:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* BOTÃO SECUNDÁRIO */
+.action-button-secundario {
+  background-color: transparent;
+  color: #000000;
+}
+
+.action-button-secundario:hover {
+  background-color: #000000;
+  color: #ffffff;
 }
 
 /* USUÁRIO LOGADO */
@@ -204,10 +211,10 @@
 #usuario-logado .btn-sair {
   margin-top: 4px;
   padding: 4px 14px;
-  border: 1px solid var(--primary);
-  border-radius: 6px;
+  border: 1px solid #000000;
+  border-radius: 4px;
   background-color: transparent;
-  color: var(--primary-hover);
+  color: #000000;
   font-family: Arial, sans-serif;
   font-size: 13px;
   font-weight: 600;
@@ -216,15 +223,13 @@
 }
 
 #usuario-logado .btn-sair:hover {
-  background-color: var(--primary);
-  color: var(--light);
+  background-color: #000000;
+  color: #ffffff;
 }
 
-#portal{
-  margin-right: 20px;
+/* CARRINHO */
+#carrinho {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
   gap: 8px;
   padding-left: 20px;
@@ -233,4 +238,41 @@
   font-weight: bold;
   color: var(--dark);
   white-space: nowrap;
+}
+
+#carrinho strong {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#carrinho strong:hover {
+  color: #000000;
+}
+
+/* MENU / LINKS */
+#menu {
+  width: 100%;
+}
+
+#ul-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lnk-menu {
+  color: var(--dark);
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.lnk-menu:hover {
+  color: #000000;
 }
