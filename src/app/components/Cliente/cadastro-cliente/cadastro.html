@@ -3,7 +3,7 @@
 
     <h2>Crie sua conta</h2>
 
-    <form (ngSubmit)="cadastrar()">
+    <form (ngSubmit)="cadastrar()" novalidate>
 
       <div class="input-group">
         <label for="nome">Nome completo</label>
@@ -14,7 +14,10 @@
           [(ngModel)]="nome"
           placeholder="Digite seu nome completo"
           required
+          [class.invalido]="erro('nome')"
+          (blur)="tocar('nome')"
         >
+        @if (erro('nome')) { <span class="field-error">{{ erro('nome') }}</span> }
       </div>
 
       <div class="input-group">
@@ -26,7 +29,10 @@
           [(ngModel)]="email"
           placeholder="Digite seu e-mail"
           required
+          [class.invalido]="erro('email')"
+          (blur)="tocar('email')"
         >
+        @if (erro('email')) { <span class="field-error">{{ erro('email') }}</span> }
       </div>
 
       <div class="input-group">
@@ -36,11 +42,13 @@
           id="CPF"
           name="CPF"
           [(ngModel)]="CPF"
-          placeholder="Digite seu CPF"
-          maxlength="11"
-          minlength="11"
+          placeholder="000.000.000-00"
+          maxlength="14"
           required
+          [class.invalido]="erro('CPF')"
+          (blur)="tocar('CPF')"
         >
+        @if (erro('CPF')) { <span class="field-error">{{ erro('CPF') }}</span> }
       </div>
 
       <div class="input-group">
@@ -50,8 +58,12 @@
           id="datanascimento"
           name="datanascimento"
           [(ngModel)]="datanascimento"
+          [max]="hoje"
           required
+          [class.invalido]="erro('datanascimento')"
+          (blur)="tocar('datanascimento')"
         >
+        @if (erro('datanascimento')) { <span class="field-error">{{ erro('datanascimento') }}</span> }
       </div>
 
       <div class="input-group">
@@ -61,12 +73,16 @@
           name="sexo"
           [(ngModel)]="sexo"
           required
+          [class.invalido]="erro('sexo')"
+          (blur)="tocar('sexo')"
+          (change)="tocar('sexo')"
         >
           <option value="" disabled>Selecione</option>
           <option value="M">Masculino</option>
           <option value="F">Feminino</option>
           <option value="O">Outro</option>
         </select>
+        @if (erro('sexo')) { <span class="field-error">{{ erro('sexo') }}</span> }
       </div>
 
       <div class="input-group">
@@ -76,34 +92,44 @@
           id="telefone"
           name="telefone"
           [(ngModel)]="telefone"
-          placeholder="Digite seu telefone"
+          placeholder="(79) 99999-9999"
+          maxlength="15"
           required
+          [class.invalido]="erro('telefone')"
+          (blur)="tocar('telefone')"
         >
+        @if (erro('telefone')) { <span class="field-error">{{ erro('telefone') }}</span> }
       </div>
 
       <div class="input-group">
         <label for="CEP">CEP</label>
         <input
         type="text"
+        id="CEP"
         name="CEP"
         [(ngModel)]="CEP"
         maxlength="9"
-        minlength="8"
         placeholder="49000-000"
         required
+        [class.invalido]="erro('CEP')"
+        (blur)="tocar('CEP')"
         >
+        @if (erro('CEP')) { <span class="field-error">{{ erro('CEP') }}</span> }
       </div>
 
       <div class="input-group">
         <label for="Numero">Número do endereço</label>
         <input
-          type="number"
+          type="text"
           id="Numero"
           name="Numero"
           [(ngModel)]="Numero"
           placeholder="Número da residência"
           required
+          [class.invalido]="erro('Numero')"
+          (blur)="tocar('Numero')"
         >
+        @if (erro('Numero')) { <span class="field-error">{{ erro('Numero') }}</span> }
       </div>
 
       <div class="input-group">
@@ -117,8 +143,14 @@
         >
       </div>
 
-      <button type="submit" class="btn-login">
-        Cadastrar
+      @if (mensagem()) {
+        <div class="message-box" [class.error]="erroGeral()" [class.success]="!erroGeral()" role="alert">
+          {{ mensagem() }}
+        </div>
+      }
+
+      <button type="submit" class="btn-login" [disabled]="enviando()">
+        {{ enviando() ? 'Cadastrando...' : 'Cadastrar' }}
       </button>
 
     </form>

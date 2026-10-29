@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { PessoaService } from '../../../services/pessoa/pessoa-service';
+import { somenteDigitos, validarCliente } from '../../../shared/validadores';
+import { mensagemErroApi } from '../../../shared/erro-api';
 
 @Component({
   selector: 'app-editar-cliente',
@@ -36,6 +38,8 @@ export class EditarCliente implements OnInit {
   carregando = signal(true);
   salvando = signal(false);
   erro = signal('');
+  tocados = signal<Record<string, boolean>>({});
+  readonly hoje = new Date().toISOString().substring(0, 10);
 
   constructor(
     private pessoaService: PessoaService,
@@ -93,16 +97,36 @@ export class EditarCliente implements OnInit {
     });
   }
 
+  // Mensagem de erro do campo (só aparece depois que o usuário interagiu com ele).
+  erroCampo(campo: string): string {
+    if (!this.tocados()[campo]) return '';
+    return validarCliente(this)[campo] ?? '';
+  }
+
+  tocar(campo: string): void {
+    this.tocados.update(t => ({ ...t, [campo]: true }));
+  }
+
   salvar(): void {
     if (this.salvando()) return;
 
-    this.salvando.set(true);
     this.erro.set('');
+    const erros = validarCliente(this);
+
+    if (Object.keys(erros).length > 0) {
+      const todos: Record<string, boolean> = {};
+      Object.keys(erros).forEach(c => (todos[c] = true));
+      this.tocados.update(t => ({ ...t, ...todos }));
+      this.erro.set('Corrija os campos destacados antes de salvar.');
+      return;
+    }
+
+    this.salvando.set(true);
 
     // Reaproveita o endereço original (com o id dele) e troca só os campos editados
     const endereco: any = { ...(this.enderecoOriginal ?? {}) };
     delete endereco.cep;
-    endereco.CEP = this.CEP.replace(/\D/g, ''); // a coluna cep tem 8 caracteres
+    endereco.CEP = somenteDigitos(this.CEP); // a coluna cep tem 8 caracteres
     endereco.numero = String(this.Numero);
     endereco.complemento = this.Complemento;
 
@@ -110,11 +134,11 @@ export class EditarCliente implements OnInit {
       id: this.id,
       idPessoa: this.id,
       nome: this.nome,
-      CPF: this.CPF,
+      CPF: somenteDigitos(this.CPF),
       datanascimento: this.datanascimento,
       sexo: this.sexo,
       email: this.email,
-      telefone: this.telefone,
+      telefone: somenteDigitos(this.telefone),
       AtivoPessoa: this.AtivoPessoa,
       Enderecos: [endereco]
     };
@@ -123,13 +147,14 @@ export class EditarCliente implements OnInit {
       .pipe(finalize(() => this.salvando.set(false)))
       .subscribe({
         next: () => {
-          alert('Pessoa alterada com sucesso!');
-          this.router.navigate(['/listar-clientes']);
+          this.router.navigate(['/listar-clientes'], {
+            state: { mensagem: 'Cliente alterado com sucesso!' }
+          });
         },
         error: (erro) => {
           console.error('Erro ao editar pessoa:', erro);
           console.error('Detalhes da API:', erro.error);
-          this.erro.set('Não foi possível salvar as alterações.');
+          this.erro.set(mensagemErroApi(erro, 'salvar as alterações'));
         }
       });
   }

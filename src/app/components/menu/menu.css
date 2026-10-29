@@ -279,3 +279,8 @@
 .lnk-menu:hover {
   color: #000000;
 }
+/* Item de navegação da página atual */
+.lnk-menu.ativo {
+  font-weight: 700;
+  border-bottom: 3px solid #000;
+}

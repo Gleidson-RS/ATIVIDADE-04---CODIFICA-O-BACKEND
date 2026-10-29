@@ -40,7 +40,20 @@
 </button>
       </div>
 
-<p>Clientes carregados: {{ clientes().length }}</p>
+      <div class="busca-clientes">
+        <input
+          type="search"
+          name="busca"
+          placeholder="Buscar por nome, CPF, e-mail ou ID"
+          [ngModel]="busca()"
+          (ngModelChange)="busca.set($event)">
+      </div>
+
+      <p>Exibindo {{ clientesFiltrados().length }} de {{ clientes().length }} clientes</p>
+
+      @if (sucesso()) {
+        <div class="message-box success" role="status">{{ sucesso() }}</div>
+      }
 
       @if (erro()) {
         <p class="error-message">{{ erro() }}</p>
@@ -60,7 +73,7 @@
           </thead>
 
           <tbody>
-            @for (cliente of clientes(); track $index) {
+            @for (cliente of clientesFiltrados(); track $index) {
               <tr>
                 <td>{{ cliente.id }}</td>
                 <td>{{ cliente.nome }}</td>
@@ -94,7 +107,7 @@
               @if (!carregando() && !erro()) {
                 <tr>
                   <td colspan="6" class="empty-message">
-                    Nenhum cliente cadastrado.
+                    {{ busca() ? 'Nenhum cliente encontrado para a busca.' : 'Nenhum cliente cadastrado.' }}
                   </td>
                 </tr>
               }

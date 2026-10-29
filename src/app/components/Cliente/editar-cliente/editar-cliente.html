@@ -8,31 +8,44 @@
     <p class="error-message">{{ erro() }}</p>
   }
 
-  <form (ngSubmit)="salvar()">
+  <form (ngSubmit)="salvar()" novalidate>
     <label for="nome">Nome</label>
-    <input id="nome" name="nome" [(ngModel)]="nome" required>
+    <input id="nome" name="nome" [(ngModel)]="nome" required
+      [class.invalido]="erroCampo('nome')" (blur)="tocar('nome')">
+    @if (erroCampo('nome')) { <span class="field-error">{{ erroCampo('nome') }}</span> }
 
     <label for="cpf">CPF</label>
-    <input id="cpf" name="CPF" type="text" maxlength="11" [(ngModel)]="CPF" required>
+    <input id="cpf" name="CPF" type="text" maxlength="14" [(ngModel)]="CPF" required
+      [class.invalido]="erroCampo('CPF')" (blur)="tocar('CPF')">
+    @if (erroCampo('CPF')) { <span class="field-error">{{ erroCampo('CPF') }}</span> }
 
     <label for="data">Data de nascimento</label>
     <input id="data" name="datanascimento" type="date"
-      [(ngModel)]="datanascimento" required>
+      [(ngModel)]="datanascimento" [max]="hoje" required
+      [class.invalido]="erroCampo('datanascimento')" (blur)="tocar('datanascimento')">
+    @if (erroCampo('datanascimento')) { <span class="field-error">{{ erroCampo('datanascimento') }}</span> }
 
     <label for="sexo">Sexo</label>
-    <select id="sexo" name="sexo" [(ngModel)]="sexo" required>
+    <select id="sexo" name="sexo" [(ngModel)]="sexo" required
+      [class.invalido]="erroCampo('sexo')" (blur)="tocar('sexo')" (change)="tocar('sexo')">
       <option value="">Selecione</option>
       <option value="M">Masculino</option>
       <option value="F">Feminino</option>
+      <option value="O">Outro</option>
     </select>
+    @if (erroCampo('sexo')) { <span class="field-error">{{ erroCampo('sexo') }}</span> }
 
     <label for="email">E-mail</label>
     <input id="email" name="email" type="email"
-      [(ngModel)]="email" required>
+      [(ngModel)]="email" required
+      [class.invalido]="erroCampo('email')" (blur)="tocar('email')">
+    @if (erroCampo('email')) { <span class="field-error">{{ erroCampo('email') }}</span> }
 
     <label for="telefone">Telefone</label>
     <input id="telefone" name="telefone" type="tel"
-      [(ngModel)]="telefone" required>
+      [(ngModel)]="telefone" maxlength="15" required
+      [class.invalido]="erroCampo('telefone')" (blur)="tocar('telefone')">
+    @if (erroCampo('telefone')) { <span class="field-error">{{ erroCampo('telefone') }}</span> }
 
     <label for="ativo">Pessoa ativa?</label>
     <select id="ativo" name="AtivoPessoa" [(ngModel)]="AtivoPessoa">
@@ -43,10 +56,14 @@
     <h3>Endereço</h3>
 
     <label for="cep">CEP</label>
-    <input id="cep" name="CEP" [(ngModel)]="CEP">
+    <input id="cep" name="CEP" maxlength="9" [(ngModel)]="CEP" required
+      [class.invalido]="erroCampo('CEP')" (blur)="tocar('CEP')">
+    @if (erroCampo('CEP')) { <span class="field-error">{{ erroCampo('CEP') }}</span> }
 
     <label for="numero">Número</label>
-    <input id="numero" name="Numero" [(ngModel)]="Numero">
+    <input id="numero" name="Numero" [(ngModel)]="Numero" required
+      [class.invalido]="erroCampo('Numero')" (blur)="tocar('Numero')">
+    @if (erroCampo('Numero')) { <span class="field-error">{{ erroCampo('Numero') }}</span> }
 
     <label for="complemento">Complemento</label>
     <input id="complemento" name="Complemento"

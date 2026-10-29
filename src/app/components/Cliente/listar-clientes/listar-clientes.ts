@@ -1,16 +1,18 @@
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { ClienteService } from '../../../services/cliente/cliente-service';
 import { Pessoas } from '../../../models/pessoas/pessoa';
+import { mensagemErroApi } from '../../../shared/erro-api';
 
 @Component({
   selector: 'app-listar-clientes',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './listar-clientes.html',
   styleUrl: './listar-clientes.css'
 })
@@ -21,10 +23,30 @@ export class ListarClientes implements OnInit {
   clientes = signal<Pessoas[]>([]);
   carregando = signal(false);
   erro = signal('');
+  sucesso = signal('');
+  busca = signal('');
+
+  // Filtro local por nome, CPF, e-mail ou ID, sobre os dados reais vindos da API.
+  clientesFiltrados = computed(() => {
+    const termo = this.busca().trim().toLowerCase();
+    const termoDigitos = termo.replace(/\D/g, '');
+    if (!termo) return this.clientes();
+
+    return this.clientes().filter(c =>
+      String(c.nome ?? '').toLowerCase().includes(termo) ||
+      String(c.email ?? '').toLowerCase().includes(termo) ||
+      String(c.id) === termo ||
+      (termoDigitos.length > 0 && String(c.CPF ?? '').replace(/\D/g, '').includes(termoDigitos))
+    );
+  });
 
   constructor(private clienteService: ClienteService) {}
 
   ngOnInit(): void {
+    // Mensagem enviada pela tela de edição após salvar
+    const mensagem = history.state?.mensagem;
+    if (mensagem) this.sucesso.set(mensagem);
+
     this.listarClientes();
   }
 
@@ -62,7 +84,7 @@ export class ListarClientes implements OnInit {
 
         error: (erro) => {
           console.error('Erro ao listar clientes:', erro);
-          this.erro.set('Não foi possível carregar os clientes.');
+          this.erro.set(mensagemErroApi(erro, 'carregar os clientes'));
         }
       });
   }
@@ -78,16 +100,18 @@ export class ListarClientes implements OnInit {
     }
 
     this.erro.set('');
+    this.sucesso.set('');
 
     this.clienteService.excluirCliente(cliente).subscribe({
       next: () => {
+        this.sucesso.set('Cliente excluído com sucesso!');
         // Atualiza a tela consultando novamente a API
         this.listarClientes();
       },
 
       error: (erro) => {
         console.error('Erro ao excluir cliente:', erro);
-        this.erro.set('Não foi possível excluir o cliente.');
+        this.erro.set(mensagemErroApi(erro, 'excluir o cliente'));
       }
     });
   }

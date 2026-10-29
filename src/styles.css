@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Mensagens e erros de formulário (padrão visual compartilhado) */
+.field-error {
+  display: block;
+  margin-top: 4px;
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.message-box {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.message-box.error {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c2c0;
+}
+
+.message-box.success {
+  background: #e8f6ee;
+  color: #1e6b3a;
+  border: 1px solid #b9e2c8;
+}
+
+input.invalido,
+select.invalido {
+  border-color: #c0392b !important;
+}

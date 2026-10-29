@@ -182,3 +182,14 @@ th {
     text-align: center;
   }
 }
+.busca-clientes {
+  margin-bottom: 12px;
+}
+
+.busca-clientes input {
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
