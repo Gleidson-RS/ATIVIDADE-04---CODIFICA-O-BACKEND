@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AdminAuth } from '../../services/admin-auth/admin-auth';
 
 @Component({
   imports: [RouterLink],
@@ -7,4 +8,11 @@ import { RouterLink } from '@angular/router';
   styleUrl: './portal.css',
   templateUrl: './portal.html',
 })
-export class Portal {}
+export class Portal {
+  constructor(private auth: AdminAuth, private router: Router) {}
+
+  sair(): void {
+    this.auth.sair();
+    this.router.navigate(['/home']);
+  }
+}

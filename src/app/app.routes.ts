@@ -8,6 +8,8 @@ import { Portal } from './components/portal/portal';
 import { ListarClientes } from './components/Cliente/listar-clientes/listar-clientes';
 import { EditarCliente } from './components/Cliente/editar-cliente/editar-cliente';
 import { ConsultarCliente } from './components/Cliente/consultar-cliente/consultar-cliente';
+import { PortalLogin } from './components/portal-login/portal-login';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
 
@@ -39,19 +41,27 @@ export const routes: Routes = [
         component: Cadastro },
 
     { 
+        path: "portal-login",
+        component: PortalLogin },
+
+    { 
         path: "portal",
-        component: Portal },
+        component: Portal,
+        canActivate: [adminGuard] },
 
     { 
         path: "consultar-cliente/:id",
-        component: ConsultarCliente },
+        component: ConsultarCliente,
+        canActivate: [adminGuard] },
         
     { 
         path: "editar-cliente/:id",
-        component: EditarCliente },
+        component: EditarCliente,
+        canActivate: [adminGuard] },
 
     { 
         path: "listar-clientes",
-        component: ListarClientes },
+        component: ListarClientes,
+        canActivate: [adminGuard] },
 
 ];
