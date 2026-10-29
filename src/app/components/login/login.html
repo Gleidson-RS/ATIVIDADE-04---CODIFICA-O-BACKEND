@@ -1,53 +1,80 @@
-<form (ngSubmit)="entrar()" #formLogin="ngForm">
+<div class="login-wrapper">
+  <div class="login-container">
+    
+    <div class="login-header">
+      <h2>Bem-vindo de volta</h2>
+      <p>Insira seus dados para acessar sua conta</p>
+    </div>
 
-  <div class="input-group">
-    <label for="email">E-mail</label>
-    <input
-      type="email"
-      id="email"
-      name="email"
-      placeholder="Digite seu e-mail"
-      [(ngModel)]="email"
-      required
-      email
-    >
-  </div>
+    <form (ngSubmit)="entrar()" #formLogin="ngForm" novalidate>
 
-  <div class="input-group">
-    <label for="CPF">CPF</label>
-    <input
-      type="text"
-      id="CPF"
-      name="CPF"
-      placeholder="Digite seu CPF"
-      [(ngModel)]="CPF"
-      required
-    >
-  </div>
+      <div class="input-group">
+        <label for="email">E-mail</label>
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="seu@email.com"
+            [(ngModel)]="email"
+            required
+            email
+            #emailInput="ngModel"
+          >
+        </div>
+        @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+          <span class="field-error">E-mail inválido ou obrigatório</span>
+        }
+      </div>
 
-  <div class="options-group">
-    <label class="checkbox-label">
-      <input
-        type="checkbox"
-        name="manterLogado"
-        [(ngModel)]="manterLogado"
+      <div class="input-group">
+        <label for="CPF">CPF</label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="CPF"
+            name="CPF"
+            placeholder="000.000.000-00"
+            [(ngModel)]="CPF"
+            required
+            #cpfInput="ngModel"
+          >
+        </div>
+        @if (cpfInput.invalid && (cpfInput.dirty || cpfInput.touched)) {
+          <span class="field-error">Campo CPF obrigatório</span>
+        }
+      </div>
+
+      <div class="options-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="manterLogado"
+            [(ngModel)]="manterLogado"
+          >
+          <span>Lembrar de mim</span>
+        </label>
+      </div>
+
+      @if (mensagem()) {
+        <div class="message-box" [class.error]="erro()" [class.success]="!erro()">
+          {{ mensagem() }}
+        </div>
+      }
+
+      <button
+        type="submit"
+        class="btn-login"
+        [disabled]="formLogin.invalid || carregando()"
       >
-      Manter logado
-    </label>
+        @if (carregando()) {
+          <span class="spinner"></span>
+          <span>Verificando...</span>
+        } @else {
+          <span>Entrar</span>
+        }
+      </button>
+
+    </form>
   </div>
-
-  @if (mensagem()) {
-    <p [style.color]="erro() ? '#e53935' : 'green'">
-      {{ mensagem() }}
-    </p>
-  }
-
-  <button
-    type="submit"
-    class="btn-login"
-    [disabled]="formLogin.invalid || carregando()"
-  >
-    {{ carregando() ? 'Verificando...' : 'Entrar' }}
-  </button>
-
-</form>
+</div>

@@ -1,30 +1,45 @@
-/* Centraliza o formulário na tela abaixo do seu header */
+/* Centralização e base */
 .login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 60vh; /* Ajuste conforme o tamanho do seu header */
-  font-family: inherit; /* Herda a fonte definida no seu projeto global */
+  min-height: 75vh;
+  padding: 20px;
+  font-family: inherit;
+  background-color: #f8fafc; /* Fundo levemente acinzentado para destacar o card */
 }
 
 .login-container {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   padding: 40px;
   background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
-.login-container h2 {
+/* Cabeçalho do formulário */
+.login-header {
   text-align: center;
-  margin-top: 0;
-  margin-bottom: 30px;
-  color: #000000;
-  font-size: 24px;
-  font-weight: 600;
+  margin-bottom: 28px;
 }
 
+.login-header h2 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.login-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Grupos de inputs */
 .input-group {
   margin-bottom: 20px;
 }
@@ -32,87 +47,132 @@
 .input-group label {
   display: block;
   margin-bottom: 8px;
-  font-size: 14px;
-  color: #333333;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 15px;
+  color: #0f172a;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.input-wrapper input::placeholder {
+  color: #535353;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+/* Erros de validação inline */
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #e53935;
   font-weight: 500;
 }
 
-.input-group input[type="text"],
-.input-group input[type="Senha"] {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #cccccc;
-  border-radius: 4px;
-  box-sizing: border-box; /* Garante que o padding não quebre a largura */
-  font-size: 14px;
-  transition: border-color 0.2s ease;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #000000; /* Foco monocromático */
-}
-
+/* Opções (Checkbox) */
 .options-group {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  font-size: 13px;
+  margin-bottom: 24px;
+  font-size: 14px;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #555555;
+  gap: 8px;
+  color: #475569;
   cursor: pointer;
+  user-select: none;
 }
 
 .checkbox-label input[type="checkbox"] {
-  accent-color: #000000; /* Estiliza o checkbox nativo para preto (suportado em navegadores modernos) */
+  width: 16px;
+  height: 16px;
+  accent-color: #0f172a;
   cursor: pointer;
+  border-radius: 4px;
 }
 
-.forgot-Senha {
-  color: #000000;
-  text-decoration: underline;
+/* Caixa de mensagens de feedback (sucesso ou erro geral) */
+.message-box {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  text-align: center;
 }
 
-.forgot-Senha:hover {
-  color: #555555;
+.message-box.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
+.message-box.success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* Botão de login */
 .btn-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 14px;
-  background-color: #000000;
+  background-color: #0f172a;
   color: #ffffff;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.btn-login:hover {
-  background-color: #333333;
+.btn-login:hover:not(:disabled) {
+  background-color: #1e293b;
 }
 
-.register-prompt {
-  margin-top: 25px;
-  text-align: center;
-  font-size: 14px;
-  color: #555555;
+.btn-login:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
-.register-prompt a {
-  color: #000000;
-  font-weight: 600;
-  text-decoration: none;
+.btn-login:disabled {
+  background-color: #4f4f50;
+  cursor: not-allowed;
+  opacity: 0.8;
 }
 
-.register-prompt a:hover {
-  text-decoration: underline;
+/* Spinner de carregamento opcional */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

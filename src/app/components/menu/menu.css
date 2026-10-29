@@ -195,11 +195,13 @@
 }
 
 #usuario-logado .saudacao {
+  margin-left: 50%;
   font-size: 13px;
   color: var(--text);
 }
 
 #usuario-logado .nome-usuario {
+  margin-left: 25%;
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -210,6 +212,7 @@
 
 #usuario-logado .btn-sair {
   margin-top: 4px;
+  margin-left: 20px;
   padding: 4px 14px;
   border: 1px solid #000000;
   border-radius: 4px;
