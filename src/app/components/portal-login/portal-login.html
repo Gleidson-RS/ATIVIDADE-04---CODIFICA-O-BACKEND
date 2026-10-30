@@ -1,0 +1,38 @@
+<div class="login-wrapper">
+  <div class="login-container">
+
+    <div class="login-header">
+      <h2>Portal do Funcionário</h2>
+      <p>Área restrita. Informe a senha de administrador.</p>
+    </div>
+
+    <form (ngSubmit)="entrar()" novalidate>
+
+      <div class="input-group">
+        <label for="senha">Senha</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            placeholder="Digite a senha"
+            autocomplete="current-password"
+            [(ngModel)]="senha"
+          >
+        </div>
+      </div>
+
+      @if (mensagem()) {
+        <div class="message-box error" role="alert">{{ mensagem() }}</div>
+      }
+
+      <button type="submit" class="btn-login">Entrar no portal</button>
+
+    </form>
+
+    <div class="register-prompt">
+      <a routerLink="/home">Voltar para a loja</a>
+    </div>
+
+  </div>
+</div>
