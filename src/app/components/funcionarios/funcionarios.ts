@@ -5,13 +5,16 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Pessoas } from '../../models/pessoas/pessoa';
 import { Enderecos } from '../../models/enderecos/enderecos';
-
 import { Funcionario } from '../../models/gestao/gestao';
 import { FuncionarioService } from '../../services/funcionario/funcionario-service';
 import { PessoaService } from '../../services/pessoa/pessoa-service'; 
-
 import { somenteDigitos } from '../../shared/validadores';
-
+import {
+  cpfValido,
+  emailValido,
+  somenteDigitos,
+  telefoneValido
+} from '../../shared/validadores';
 @Component({
   selector: 'app-funcionarios',
   imports: [CommonModule, FormsModule, RouterLink],
@@ -76,9 +79,7 @@ export class Funcionarios {
       pessoas: this.pessoaService.listarPessoas()
     }).subscribe({
       next: ({ funcionarios, pessoas }) => {
-
         const base = pessoas.map(p => this.normalizar(p));
-
         const lista: Funcionario[] = funcionarios.map((item: any) => {
           const dadosFunc = this.normalizar(item);
           const idPessoa = dadosFunc.id;
@@ -93,6 +94,24 @@ export class Funcionarios {
             cargo: item.cargo,
             dataAdmissao: item.dataAdmissao?.substring(0, 10) ?? '',
             ativo: (pessoa?.ativo ?? dadosFunc.ativo).toUpperCase() === 'S'
+
+        const lista: Funcionario[] = funcionarios.map(item => {
+
+          const idPessoa = Number(item.idPessoa ?? item.idpessoa);
+
+          const pessoa = pessoas.find(
+            p => Number(p.id) === idPessoa
+          );
+
+          return {
+            id: idPessoa,
+            nome: pessoa?.nome ?? item.nome ?? '',
+            cpf: somenteDigitos(String(pessoa?.CPF ?? '')),
+            email: pessoa?.email ?? '',
+            telefone: somenteDigitos(String(pessoa?.telefone ?? '')),
+            cargo: item.cargo,
+            dataAdmissao: item.dataAdmissao?.substring(0, 10) ?? '',
+            ativo: String(pessoa?.AtivoPessoa ?? 'S').toUpperCase() === 'S'
           };
         });
 
@@ -237,6 +256,91 @@ export class Funcionarios {
           return;
         }
         falha(erro);
+
+    if (
+      nome.length < 3 ||
+      cpfLimpo.length !== 11 ||
+      !emailValido(email) ||
+      !telefoneValido(telefoneLimpo) ||
+      cargo.length < 2 ||
+      !dataAdmissao ||
+      dataAdmissao > this.dataAtual()
+    ) {
+      this.falhar(
+        'Preencha todos os campos corretamente. Confira CPF, e-mail, telefone e data de admissão.'
+      );
+      return;
+    }
+
+    const cpfDuplicado = this.funcionarios().some(item =>
+      item.cpf === cpfLimpo && item.id !== this.editandoId()
+    );
+
+    if (cpfDuplicado) {
+      this.falhar('Esta pessoa já está cadastrada como funcionário.');
+      return;
+    }
+
+    const idEmEdicao = this.editandoId();
+
+    if (idEmEdicao !== null) {
+
+      this.funcionarioService.alterarFuncionario(idEmEdicao, {
+        idpessoa: idEmEdicao,
+        cargo,
+        dataAdmissao
+      }).subscribe({
+        next: () => {
+          this.mensagem.set('Funcionário atualizado com sucesso no banco de dados.');
+          this.carregar();
+          this.limparFormulario();
+        },
+        error: erro => {
+          console.error('Erro ao atualizar funcionário:', erro);
+          this.falhar('Não foi possível atualizar o funcionário.');
+        }
+      });
+
+      return;
+    }
+
+    // Localiza uma pessoa já cadastrada pelo CPF.
+    this.pessoaService.listarPessoas().subscribe({
+      next: pessoas => {
+
+        const pessoaEncontrada = pessoas.find(p =>
+          somenteDigitos(String(p.CPF ?? '')) === cpfLimpo
+        );
+
+        if (!pessoaEncontrada) {
+          this.falhar(
+            'Pessoa não encontrada. Cadastre primeiro essa pessoa no sistema de clientes.'
+          );
+          return;
+        }
+
+        this.funcionarioService.adicionarFuncionario({
+          idpessoa: pessoaEncontrada.id,
+          cargo,
+          dataAdmissao
+        }).subscribe({
+          next: () => {
+            this.mensagem.set('Funcionário cadastrado com sucesso no banco de dados.');
+            this.carregar();
+            this.limparFormulario();
+          },
+          error: erro => {
+            console.error('Erro ao cadastrar funcionário:', erro);
+            this.falhar(
+              'Não foi possível cadastrar o funcionário. Verifique se essa pessoa já está cadastrada como funcionário.'
+            );
+          }
+        });
+      },
+
+      error: erro => {
+        console.error('Erro ao consultar pessoas:', erro);
+        this.falhar('Não foi possível consultar as pessoas cadastradas.');
       }
     });
   }

@@ -38,6 +38,7 @@ export class FuncionarioService {
 
   adicionarFuncionario(dados: FuncionarioCadastroApi): Observable<unknown> {
     return this.http.post(this.apiUrl, dados, { responseType: 'text' });
+    return this.http.post(this.apiUrl, dados);
   }
 
   alterarFuncionario(
@@ -49,5 +50,10 @@ export class FuncionarioService {
 
   excluirFuncionario(id: number): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
+    return this.http.put(`${this.apiUrl}/${id}`, dados);
+  }
+
+  excluirFuncionario(id: number): Observable<unknown> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

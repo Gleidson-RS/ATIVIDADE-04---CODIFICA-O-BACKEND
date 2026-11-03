@@ -16,7 +16,8 @@
           <input name="nome" [(ngModel)]="nome" placeholder="Nome do funcionário">
         </label>
         <label>CPF
-          <input name="cpf" [(ngModel)]="cpf" placeholder="Somente números">
+        <input name="cpf" [(ngModel)]="cpf" placeholder="Somente números">
+        <input name="cpf" [(ngModel)]="cpf" required maxlength="11" placeholder="Somente números">
         </label>
         <label>E-mail
           <input type="email" name="email" [(ngModel)]="email" placeholder="nome@empresa.com">
