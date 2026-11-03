@@ -41,7 +41,7 @@ export class CatalogoServicos {
   atualizar(): void {
     this.carregando.set(true);
     this.erro.set('');
-    this.dadosApi.listarItensCatalogo()
+    this.dadosApi.listarServicos()
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
         next: itens => this.servicos.set(itens.filter(item => item.tipoItem === 'S')),
