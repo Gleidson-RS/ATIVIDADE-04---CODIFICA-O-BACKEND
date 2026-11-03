@@ -41,6 +41,10 @@
           name="CPF"
           [(ngModel)]="CPF"
           placeholder="informe seu CPF (somente números)"
+          maxlength="11"
+          required
+          [class.invalido]="erro('CPF')"
+          (blur)="tocar('CPF')"
         >
         @if (erroCampo('CPF')) {
           <span class="field-error">{{ erroCampo('CPF') }}</span>
