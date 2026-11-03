@@ -284,3 +284,11 @@
   font-weight: 700;
   border-bottom: 3px solid #000;
 }
+
+@media (max-width: 920px) {
+  #cabecalho { padding: 18px 4%; }
+  .linha-superior { flex-wrap: wrap; gap: 16px; }
+  #pesquisa { order: 3; flex-basis: 100%; max-width: none; }
+  #ul-menu { flex-wrap: wrap; gap: 16px 24px; }
+  .lnk-menu { font-size: 16px; }
+}

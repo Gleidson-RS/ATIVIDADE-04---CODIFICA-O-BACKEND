@@ -6,7 +6,20 @@ export function somenteDigitos(valor: unknown): string {
 
 export function cpfValido(valor: unknown): boolean {
   const cpf = somenteDigitos(valor);
-  return cpf.length === 11;
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+  const calcularDigito = (base: string, pesoInicial: number): number => {
+    let soma = 0;
+    for (let i = 0; i < base.length; i++) {
+      soma += Number(base[i]) * (pesoInicial - i);
+    }
+    const resto = soma % 11;
+    return resto < 2 ? 0 : 11 - resto;
+  };
+
+  const primeiro = calcularDigito(cpf.substring(0, 9), 10);
+  const segundo = calcularDigito(cpf.substring(0, 9) + primeiro, 11);
+  return cpf === cpf.substring(0, 9) + primeiro + segundo;
 }
 
 export function emailValido(valor: unknown): boolean {

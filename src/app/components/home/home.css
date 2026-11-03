@@ -210,3 +210,7 @@ section h2 {
     justify-content: flex-start;
   }
 }
+.category-card {
+  color: inherit;
+  text-decoration: none;
+}

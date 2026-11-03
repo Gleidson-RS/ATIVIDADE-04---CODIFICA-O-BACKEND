@@ -1,0 +1,87 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Portal do funcionário</p>
+      <h1>Registro de atendimentos</h1>
+      <p class="page-description">Registre atendimentos relacionando clientes, itens e funcionários.</p>
+    </div>
+    <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+  </header>
+
+  <div class="demo-notice" role="note">
+    Os atendimentos são enviados à API. Como o Swagger fornecido não possui rota de consulta/cadastro de funcionários,
+    informe o ID de uma pessoa que já esteja cadastrada na tabela funcionario do MySQL. Um ID sem vínculo nessa tabela será rejeitado pela API.
+  </div>
+
+  @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
+  @if (mensagem()) { <p class="feedback" role="status">{{ mensagem() }}</p> }
+  @if (carregando()) { <p class="feedback" role="status">Carregando dados...</p> }
+
+  <section class="form-panel">
+    <h2>Novo atendimento</h2>
+    <form (ngSubmit)="salvar()">
+      <div class="form-grid">
+        <label>Cliente
+          <select name="cliente" [ngModel]="clienteId()" (ngModelChange)="clienteId.set($event)" required>
+            <option [ngValue]="null" disabled>Selecione um cliente</option>
+            @for (cliente of clientes(); track cliente.id) { <option [ngValue]="cliente.id">{{ cliente.nome }}</option> }
+          </select>
+        </label>
+        <label>ID do funcionário no banco de dados
+          <input type="number" name="funcionarioId" [(ngModel)]="funcionarioId" min="1" step="1" required placeholder="Ex.: 27">
+        </label>
+        <label>Tipo de item
+          <select name="tipoItem" [ngModel]="categoriaItem()" (ngModelChange)="trocarTipo($event)">
+            <option value="Serviço">Serviço</option>
+            <option value="Produto">Produto</option>
+          </select>
+        </label>
+        <label>Item
+          <select name="item" [ngModel]="itemId()" (ngModelChange)="itemId.set($event)" required>
+            <option [ngValue]="null" disabled>Selecione um {{ categoriaItem().toLowerCase() }}</option>
+            @for (item of itensDisponiveis(); track item.id) {
+              <option [ngValue]="item.id">{{ item.nome }} — {{ item.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</option>
+            }
+          </select>
+        </label>
+        <label>Quantidade
+          <input type="number" name="quantidade" [(ngModel)]="quantidade" min="1" step="1" required>
+        </label>
+        <label>Data do atendimento
+          <input type="date" name="data" [(ngModel)]="data" required>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" [disabled]="salvando() || carregando()">
+          {{ salvando() ? 'Enviando...' : 'Registrar atendimento' }}
+        </button>
+        <button class="btn-outline" type="button" (click)="carregarDados()" [disabled]="carregando()">Atualizar listas</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="table-panel">
+    <div class="section-heading">
+      <div><h2>Atendimentos registrados na API</h2><p>{{ atendimentos().length }} registro(s)</p></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Funcionário</th><th>Itens</th><th>Status</th></tr></thead>
+        <tbody>
+          @for (atendimento of atendimentos(); track atendimento.idAtendimento) {
+            <tr>
+              <td>{{ atendimento.idAtendimento }}</td>
+              <td>{{ formatarData(atendimento.dataAtendimento) }}</td>
+              <td>{{ atendimento.nomePessoa || ('ID ' + atendimento.idPessoa) }}</td>
+              <td>{{ formatarFuncionarios(atendimento) }}</td>
+              <td>{{ formatarItens(atendimento) }}</td>
+              <td><span class="status-pill">{{ formatarStatus(atendimento.statusAtendimento) }}</span></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="6" class="empty-state">Nenhum atendimento retornado pela API.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

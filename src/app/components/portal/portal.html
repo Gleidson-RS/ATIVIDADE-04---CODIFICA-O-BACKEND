@@ -17,7 +17,7 @@
     <section class="welcome-section">
       <h2>Bem-vindo ao painel</h2>
       <p>
-        Gerencie os clientes cadastrados no sistema.
+        Gerencie clientes, funcionários, atendimentos e estoque.
         Escolha uma das opções abaixo para continuar.
       </p>
     </section>
@@ -108,12 +108,50 @@
 
     </section>
 
+    <section class="actions-section">
+      <h3>Operações da loja</h3>
+      <div class="actions-grid">
+        <article class="action-card">
+          <div class="card-icon">◎</div>
+          <h4>Funcionários</h4>
+          <p>Cadastre, consulte, edite e remova funcionários.</p>
+          <button routerLink="/funcionarios" class="action-button">Gerenciar funcionários</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">▣</div>
+          <h4>Atendimentos</h4>
+          <p>Registre atendimentos relacionando clientes, itens e funcionários.</p>
+          <button routerLink="/atendimentos" class="action-button">Registrar atendimento</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">▤</div>
+          <h4>Estoque</h4>
+          <p>Consulte quantidades disponíveis e registre entradas de produtos.</p>
+          <button routerLink="/estoque" class="action-button">Consultar estoque</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">◇</div>
+          <h4>Catálogo de serviços</h4>
+          <p>Consulte os serviços e filtre os resultados por categoria.</p>
+          <button routerLink="/catalogo-servicos" class="action-button">Ver serviços</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">◈</div>
+          <h4>Catálogo de produtos</h4>
+          <p>Consulte os produtos da loja e filtre por categoria.</p>
+          <button routerLink="/catalogo-produtos" class="action-button">Ver produtos</button>
+        </article>
+      </div>
+    </section>
+
     <section class="info-section">
       <h3>Informações do sistema</h3>
 
       <p>
-        Utilize este painel para realizar as operações
-        de cadastro e manutenção dos dados dos clientes.
+        Clientes usam a API PessoaEndereco; catálogos usam a API Categorium e seus itens; atendimentos
+      usam a API Atendimento. O Swagger recebido não documenta rotas de funcionário nem de estoque/entrada:
+      esses dois módulos continuam demonstrativos no navegador. No atendimento, o ID do funcionário
+      precisa existir previamente na tabela funcionario do MySQL.
       </p>
     </section>
 

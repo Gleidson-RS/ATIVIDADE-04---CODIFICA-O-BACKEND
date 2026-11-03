@@ -1,0 +1,61 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Loja</p>
+      <h1>Catálogo de produtos</h1>
+      <p class="page-description">Encontre produtos esportivos por nome ou categoria.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn-outline" type="button" (click)="atualizar()" [disabled]="carregando()">Atualizar catálogo</button>
+      <a class="btn-outline" routerLink="/home">Voltar à página inicial</a>
+    </div>
+  </header>
+
+  <div class="demo-notice" role="note">Os produtos são carregados da API de categorias e itens. O preço e o estoque são exibidos quando informados pelo relacionamento de produto na resposta da API.</div>
+  @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
+  @if (carregando()) { <p class="feedback" role="status">Carregando produtos da API...</p> }
+
+  <section class="filter-panel" aria-label="Filtros de produtos">
+    <label>
+      Buscar produto
+      <input type="search" name="busca" placeholder="Digite o nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+    </label>
+    <label>
+      Categoria
+      <select name="categoria" [ngModel]="categoria()" (ngModelChange)="categoria.set($event)">
+        @for (item of categorias(); track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <button class="btn-outline" type="button" (click)="busca.set(''); categoria.set('Todas')">Limpar filtros</button>
+  </section>
+
+  <p class="result-count">{{ filtrados().length }} produto(s) encontrado(s)</p>
+
+  @if (!carregando() && !erro() && produtos().length === 0) {
+    <p class="inline-warning">A API não retornou produtos ativos. Verifique os itens com tipo “P” no banco de dados.</p>
+  }
+
+  <div class="catalog-grid">
+    @for (produto of filtrados(); track produto.id) {
+      <article class="catalog-card">
+        <span class="category-tag">{{ produto.categoria }}</span>
+        <h2>{{ produto.nome }}</h2>
+        <p>{{ produto.descricao }}</p>
+        <footer>
+          <strong>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+          @if (produto.estoque !== undefined) {
+            <span [class.stock-low]="produto.estoque <= 3" class="stock-label">
+              {{ produto.estoque > 0 ? produto.estoque + ' em estoque' : 'Sem estoque' }}
+            </span>
+          } @else {
+            <span class="stock-label">Estoque não informado</span>
+          }
+        </footer>
+      </article>
+    } @empty {
+      <div class="empty-state">Nenhum produto corresponde aos filtros selecionados.</div>
+    }
+  </div>
+</section>

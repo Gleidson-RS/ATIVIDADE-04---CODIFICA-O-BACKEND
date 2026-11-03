@@ -10,6 +10,11 @@ import { EditarCliente } from './components/Cliente/editar-cliente/editar-client
 import { ConsultarCliente } from './components/Cliente/consultar-cliente/consultar-cliente';
 import { PortalLogin } from './components/portal-login/portal-login';
 import { adminGuard } from './guards/admin.guard';
+import { CatalogoServicos } from './components/catalogo-servicos/catalogo-servicos';
+import { CatalogoProdutos } from './components/catalogo-produtos/catalogo-produtos';
+import { Funcionarios } from './components/funcionarios/funcionarios';
+import { Atendimentos } from './components/atendimentos/atendimentos';
+import { Estoque } from './components/estoque/estoque';
 
 export const routes: Routes = [
 
@@ -27,6 +32,16 @@ export const routes: Routes = [
     { 
         path: "sobre",
         component: Sobre },
+
+    {
+        path: 'catalogo-servicos',
+        component: CatalogoServicos
+    },
+
+    {
+        path: 'catalogo-produtos',
+        component: CatalogoProdutos
+    },
 
     { 
         path: "carrinho",
@@ -63,5 +78,23 @@ export const routes: Routes = [
         path: "listar-clientes",
         component: ListarClientes,
         canActivate: [adminGuard] },
+
+    {
+        path: 'funcionarios',
+        component: Funcionarios,
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'atendimentos',
+        component: Atendimentos,
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'estoque',
+        component: Estoque,
+        canActivate: [adminGuard]
+    },
 
 ];

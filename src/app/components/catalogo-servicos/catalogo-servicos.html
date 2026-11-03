@@ -1,0 +1,55 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Catálogo</p>
+      <h1>Serviços esportivos</h1>
+      <p class="page-description">Consulte os serviços disponíveis e filtre por categoria.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn-outline" type="button" (click)="atualizar()" [disabled]="carregando()">Atualizar catálogo</button>
+      <a class="btn-outline" routerLink="/home">Voltar à página inicial</a>
+    </div>
+  </header>
+
+  <div class="demo-notice" role="note">Os serviços são carregados da API de categorias e itens. Somente registros ativos com tipo de item “S” são exibidos.</div>
+  @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
+  @if (carregando()) { <p class="feedback" role="status">Carregando serviços da API...</p> }
+
+  <section class="filter-panel" aria-label="Filtros de serviços">
+    <label>
+      Buscar serviço
+      <input type="search" name="busca" placeholder="Digite o nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+    </label>
+    <label>
+      Categoria
+      <select name="categoria" [ngModel]="categoria()" (ngModelChange)="categoria.set($event)">
+        @for (item of categorias(); track item) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+    </label>
+    <button class="btn-outline" type="button" (click)="busca.set(''); categoria.set('Todas')">Limpar filtros</button>
+  </section>
+
+  <p class="result-count">{{ filtrados().length }} serviço(s) encontrado(s)</p>
+
+  @if (!carregando() && !erro() && servicos().length === 0) {
+    <p class="inline-warning">A API não retornou serviços ativos. Verifique se existem itens com tipo “S” cadastrados no banco de dados.</p>
+  }
+
+  <div class="catalog-grid">
+    @for (servico of filtrados(); track servico.id) {
+      <article class="catalog-card">
+        <span class="category-tag">{{ servico.categoria }}</span>
+        <h2>{{ servico.nome }}</h2>
+        <p>{{ servico.descricao }}</p>
+        <footer>
+          <strong>{{ servico.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+          <span class="status-active">Disponível</span>
+        </footer>
+      </article>
+    } @empty {
+      <div class="empty-state">Nenhum serviço corresponde aos filtros selecionados.</div>
+    }
+  </div>
+</section>
