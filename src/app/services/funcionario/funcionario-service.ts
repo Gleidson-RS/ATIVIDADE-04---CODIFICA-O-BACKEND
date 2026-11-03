@@ -1,74 +1,41 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Funcionario } from '../../models/gestao/gestao';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-/** Formato devolvido pelo endpoint /api/Funcionario. */
-interface FuncionarioApi {
+export interface Funcionario {
   idPessoa?: number;
   idpessoa?: number;
-  Idpessoa?: number;
-  nome?: string | null;
-  cpf?: string | number | null;
-  email?: string | null;
-  telefone?: string | number | null;
-  ativoPessoa?: string | null;
-  cargo?: string | null;
-  dataAdmissao?: string | null;
-  data_admissao?: string | null;
-}
-
-export interface NovoFuncionarioApi {
-  cpf: string;
+  nome?: string;
   cargo: string;
   dataAdmissao: string;
 }
 
-export interface AtualizarFuncionarioApi {
-  cargo: string;
-  dataAdmissao: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class FuncionarioService {
-  private readonly apiUrl = `${environment.apiBaseUrl}/Funcionario`;
+
+  private apiUrl = 'https://localhost:7077/api/Funcionario';
 
   constructor(private http: HttpClient) {}
 
   listarFuncionarios(): Observable<Funcionario[]> {
-    return this.http.get<FuncionarioApi[]>(this.apiUrl).pipe(
-      map(registros => (registros ?? []).map(item => this.converter(item)))
-    );
+    return this.http.get<Funcionario[]>(this.apiUrl);
   }
 
-  adicionarFuncionario(dados: NovoFuncionarioApi): Observable<unknown> {
-    return this.http.post<unknown>(this.apiUrl, dados);
+  buscarFuncionario(id: number): Observable<Funcionario> {
+    return this.http.get<Funcionario>(`${this.apiUrl}/${id}`);
   }
 
-  atualizarFuncionario(
-    idPessoa: number,
-    dados: AtualizarFuncionarioApi
-  ): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${idPessoa}`, dados);
+  adicionarFuncionario(funcionario: Funcionario): Observable<any> {
+    return this.http.post(this.apiUrl, funcionario);
   }
 
-  excluirFuncionario(idPessoa: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${idPessoa}`);
+  alterarFuncionario(id: number, funcionario: Funcionario): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, funcionario);
   }
 
-  private converter(item: FuncionarioApi): Funcionario {
-    const statusPessoa = String(item.ativoPessoa ?? 'S').trim().toUpperCase();
-
-    return {
-      id: Number(item.idPessoa ?? item.idpessoa ?? item.Idpessoa ?? 0),
-      nome: String(item.nome ?? ''),
-      cpf: String(item.cpf ?? '').replace(/\D/g, '').padStart(11, '0'),
-      email: String(item.email ?? ''),
-      telefone: String(item.telefone ?? ''),
-      cargo: String(item.cargo ?? ''),
-      dataAdmissao: String(item.dataAdmissao ?? item.data_admissao ?? ''),
-      ativo: !['N', '0', 'FALSE', 'INATIVO', 'INACTIVE'].includes(statusPessoa)
-    };
+  excluirFuncionario(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }
