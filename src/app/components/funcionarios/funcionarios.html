@@ -8,31 +8,27 @@
     <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
   </header>
 
-  <div class="demo-notice" role="note">
-    A API documentada não possui endpoint de funcionário. Este módulo mantém os cadastros no localStorage deste navegador; não cria registros na tabela funcionario do MySQL.
-  </div>
-
   <section class="form-panel">
     <h2>{{ editandoId() === null ? 'Cadastrar funcionário' : 'Editar funcionário' }}</h2>
     <form (ngSubmit)="salvar()" #formFuncionario="ngForm">
       <div class="form-grid">
         <label>Nome completo
-          <input name="nome" [(ngModel)]="nome" minlength="3" required placeholder="Nome do funcionário">
+          <input name="nome" [(ngModel)]="nome" placeholder="Nome do funcionário">
         </label>
         <label>CPF
-          <input name="cpf" [(ngModel)]="cpf" required maxlength="14" placeholder="Somente números">
+          <input name="cpf" [(ngModel)]="cpf" placeholder="Somente números">
         </label>
         <label>E-mail
-          <input type="email" name="email" [(ngModel)]="email" required placeholder="nome@empresa.com">
+          <input type="email" name="email" [(ngModel)]="email" placeholder="nome@empresa.com">
         </label>
         <label>Telefone
-          <input type="tel" name="telefone" [(ngModel)]="telefone" required placeholder="DDD + número">
+          <input type="tel" name="telefone" [(ngModel)]="telefone" placeholder="DDD + número">
         </label>
         <label>Cargo / função
-          <input name="cargo" [(ngModel)]="cargo" required minlength="2" placeholder="Ex.: Atendente">
+          <input name="cargo" [(ngModel)]="cargo" placeholder="Ex.: Atendente">
         </label>
         <label>Data de admissão
-          <input type="date" name="dataAdmissao" [(ngModel)]="dataAdmissao" [max]="hoje" required>
+          <input type="date" name="dataAdmissao" [(ngModel)]="dataAdmissao">
         </label>
         <label class="checkbox-field">
           <input type="checkbox" name="ativo" [(ngModel)]="ativo">
@@ -40,7 +36,7 @@
         </label>
       </div>
       <div class="form-actions">
-        <button class="btn-primary" type="submit" [disabled]="formFuncionario.invalid">
+        <button class="btn-primary" type="submit">
           {{ editandoId() === null ? 'Cadastrar funcionário' : 'Salvar alterações' }}
         </button>
         @if (editandoId() !== null) {

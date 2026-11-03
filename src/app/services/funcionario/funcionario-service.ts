@@ -1,11 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-export interface Funcionario {
+export interface FuncionarioApi {
   idPessoa?: number;
   idpessoa?: number;
   nome?: string;
+  cargo: string;
+  dataAdmissao: string;
+}
+
+export interface FuncionarioCadastroApi {
+  idpessoa: number;
+  idPessoa?: number;
+  cpf?: string;
   cargo: string;
   dataAdmissao: string;
 }
@@ -15,27 +24,30 @@ export interface Funcionario {
 })
 export class FuncionarioService {
 
-  private apiUrl = 'https://localhost:7077/api/Funcionario';
+  private readonly apiUrl = `${environment.apiBaseUrl}/Funcionario`;
 
   constructor(private http: HttpClient) {}
 
-  listarFuncionarios(): Observable<Funcionario[]> {
-    return this.http.get<Funcionario[]>(this.apiUrl);
+  listarFuncionarios(): Observable<FuncionarioApi[]> {
+    return this.http.get<FuncionarioApi[]>(this.apiUrl);
   }
 
-  buscarFuncionario(id: number): Observable<Funcionario> {
-    return this.http.get<Funcionario>(`${this.apiUrl}/${id}`);
+  buscarFuncionario(id: number): Observable<FuncionarioApi> {
+    return this.http.get<FuncionarioApi>(`${this.apiUrl}/${id}`);
   }
 
-  adicionarFuncionario(funcionario: Funcionario): Observable<any> {
-    return this.http.post(this.apiUrl, funcionario);
+  adicionarFuncionario(dados: FuncionarioCadastroApi): Observable<unknown> {
+    return this.http.post(this.apiUrl, dados, { responseType: 'text' });
   }
 
-  alterarFuncionario(id: number, funcionario: Funcionario): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, funcionario);
+  alterarFuncionario(
+    id: number,
+    dados: FuncionarioCadastroApi
+  ): Observable<unknown> {
+    return this.http.put(`${this.apiUrl}/${id}`, dados, { responseType: 'text' });
   }
 
-  excluirFuncionario(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  excluirFuncionario(id: number): Observable<unknown> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
   }
 }
