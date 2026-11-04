@@ -1,36 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Pessoas } from '../../models/pessoas/pessoa';
-import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of, switchMap, throwError } from 'rxjs';
+import { PessoaService } from '../pessoa/pessoa-service';
 
+/**
+ * Operações de cliente que dependem de regras extras sobre a API PessoaEndereco.
+ * Usa o PessoaService para as chamadas HTTP (sem duplicar URL nem cliente HTTP).
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
 
-  private readonly apiUrl =
-    'https://localhost:7077/api/PessoaEndereco/';
+  constructor(private pessoaService: PessoaService) {}
 
-  constructor(private http: HttpClient) {}
-
-  // Lista todos os clientes
   listarClientes(): Observable<Pessoas[]> {
-    return this.http.get<Pessoas[]>(this.apiUrl);
+    return this.pessoaService.listarPessoas();
   }
 
-  // Consulta um cliente pelo ID
   consultarCliente(id: number): Observable<Pessoas> {
-    return this.http.get<Pessoas>(`${this.apiUrl}${id}`);
+    return this.pessoaService.listarPessoa(id);
   }
 
-  // Edita os dados de um cliente existente
   editarCliente(id: number, cliente: unknown): Observable<string> {
-    return this.http.put(`${this.apiUrl}${id}`, cliente, { responseType: 'text' });
-  }
-
-  // DELETE simples (a API dá 500 se a pessoa ainda tiver endereços)
-  private deletar(id: number): Observable<string> {
-    return this.http.delete(`${this.apiUrl}${id}`, { responseType: 'text' });
+    return this.pessoaService.alterarPessoa(id, cliente);
   }
 
   // Exclui o cliente SEM precisar alterar o back-end:
@@ -62,7 +55,7 @@ export class ClienteService {
 
     return this.editarCliente(id, { ...base, Enderecos: [] }).pipe(
       switchMap(() =>
-        this.deletar(id).pipe(
+        this.pessoaService.excluirPessoa(id).pipe(
           catchError((erroDelete) =>
             this.editarCliente(id, { ...base, Enderecos: enderecosOriginais }).pipe(
               catchError(() => of('')),

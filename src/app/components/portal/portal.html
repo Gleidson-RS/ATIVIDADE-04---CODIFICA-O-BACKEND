@@ -4,7 +4,7 @@
     <div class="header-content">
       <div>
         <h1>Portal do Funcionário</h1>
-        <p>Gerenciamento de clientes</p>
+        <p>Gestão da loja: clientes, vendas e estoque</p>
       </div>
 
       <span class="user-badge">Área administrativa</span>
@@ -20,6 +20,61 @@
         Gerencie clientes, funcionários, atendimentos e estoque.
         Escolha uma das opções abaixo para continuar.
       </p>
+    </section>
+
+    <section class="indicadores-section" aria-labelledby="titulo-indicadores">
+      <div class="indicadores-cabecalho">
+        <h3 id="titulo-indicadores">Indicadores gerais</h3>
+        @if (carregando()) { <span class="status-carregando" role="status">Atualizando...</span> }
+      </div>
+
+      @if (temFalhas()) {
+        <p class="aviso-falha" role="alert">
+          Não foi possível carregar: {{ falhas().join(', ') }}. Os demais indicadores continuam válidos.
+        </p>
+      }
+
+      <div class="indicadores-grid">
+        <article class="indicador"><span>Clientes cadastrados</span><strong>{{ total(indicadores().clientes) }}</strong></article>
+        <article class="indicador"><span>Funcionários</span><strong>{{ total(indicadores().funcionarios) }}</strong></article>
+        <article class="indicador"><span>Produtos ativos</span><strong>{{ total(indicadores().produtos) }}</strong>
+          <small>{{ total(indicadores().estoqueBaixo) }} com estoque baixo</small></article>
+        <article class="indicador"><span>Serviços ativos</span><strong>{{ total(indicadores().servicos) }}</strong></article>
+        <article class="indicador"><span>Pedidos pendentes</span><strong>{{ total(indicadores().pendentes) }}</strong>
+          <small>{{ total(indicadores().pedidosHoje) }} registrado(s) hoje</small></article>
+        <article class="indicador"><span>Pedidos concluídos</span><strong>{{ total(indicadores().concluidos) }}</strong></article>
+        <article class="indicador indicador-destaque">
+          <span>Faturamento (concluídos)</span>
+          @let faturamento = indicadores().faturamento;
+          <strong>{{ faturamento === null ? '—' : (faturamento | currency:'BRL':'symbol':'1.2-2':'pt-BR') }}</strong>
+        </article>
+      </div>
+
+      <div class="ultimos-pedidos">
+        <div class="ultimos-cabecalho">
+          <h4>Últimos pedidos</h4>
+          <a routerLink="/pedidos" class="link-acao">Ver todos</a>
+        </div>
+        @if (pedidosRecentes().length === 0) {
+          <p class="vazio">Nenhum pedido registrado ainda.</p>
+        } @else {
+          <div class="tabela-scroll">
+            <table class="tabela-simples">
+              <thead><tr><th>Nº</th><th>Cliente</th><th>Total</th><th>Situação</th></tr></thead>
+              <tbody>
+                @for (pedido of pedidosRecentes(); track pedido.idAtendimento) {
+                  <tr>
+                    <td>#{{ pedido.idAtendimento }}</td>
+                    <td>{{ pedido.nomePessoa || ('ID ' + pedido.idPessoa) }}</td>
+                    <td>{{ pedidoTotal(pedido) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td>{{ rotuloStatus(pedido) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
     </section>
 
     <section class="actions-section">
@@ -109,6 +164,36 @@
     </section>
 
     <section class="actions-section">
+      <h3>Cadastros e vendas</h3>
+      <div class="actions-grid">
+        <article class="action-card">
+          <div class="card-icon">▥</div>
+          <h4>Categorias</h4>
+          <p>Crie, altere e exclua as categorias usadas por produtos e serviços.</p>
+          <button routerLink="/categorias" class="action-button">Gerenciar categorias</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">◉</div>
+          <h4>Produtos</h4>
+          <p>Cadastre produtos com preço, unidade e categoria; ative ou desative cada item.</p>
+          <button routerLink="/gerenciar-produtos" class="action-button">Gerenciar produtos</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">◍</div>
+          <h4>Serviços</h4>
+          <p>Cadastre os serviços oferecidos, com preço e descrição.</p>
+          <button routerLink="/gerenciar-servicos" class="action-button">Gerenciar serviços</button>
+        </article>
+        <article class="action-card">
+          <div class="card-icon">≡</div>
+          <h4>Pedidos</h4>
+          <p>Acompanhe os pedidos, conclua os pendentes ou cancele-os com devolução ao estoque.</p>
+          <button routerLink="/pedidos" class="action-button">Gerenciar pedidos</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="actions-section">
       <h3>Operações da loja</h3>
       <div class="actions-grid">
         <article class="action-card">
@@ -146,12 +231,10 @@
 
     <section class="info-section">
       <h3>Informações do sistema</h3>
-
       <p>
-        Clientes usam a API PessoaEndereco; catálogos usam a API Categorium e seus itens; atendimentos
-      usam a API Atendimento. O Swagger recebido não documenta rotas de funcionário nem de estoque/entrada:
-      esses dois módulos continuam demonstrativos no navegador. No atendimento, o ID do funcionário
-      precisa existir previamente na tabela funcionario do MySQL.
+        Clientes usam a API PessoaEndereco; categorias, produtos e serviços usam as APIs Categorium, ProdutoItem e Servico;
+        funcionários usam a API Funcionario; pedidos e atendimentos usam Atendimento e Pedido; o estoque usa Estoque.
+        Os dados são gravados no MySQL. Pedidos de produtos dão baixa automática no estoque, e cancelar um pedido devolve as quantidades.
       </p>
     </section>
 

@@ -3,22 +3,23 @@
     <div>
       <p class="eyebrow">Loja</p>
       <h1>Catálogo de produtos</h1>
-      <p class="page-description">Encontre produtos esportivos por nome ou categoria.</p>
+      <p class="page-description">Encontre produtos por nome, categoria ou faixa de preço e adicione-os ao carrinho.</p>
     </div>
     <div class="form-actions">
+      <a class="btn-outline" routerLink="/carrinho">Ver carrinho</a>
       <button class="btn-outline" type="button" (click)="atualizar()" [disabled]="carregando()">Atualizar catálogo</button>
-      <a class="btn-outline" routerLink="/home">Voltar à página inicial</a>
+      <a class="btn-outline" routerLink="/home">Página inicial</a>
     </div>
   </header>
 
-  <div class="demo-notice" role="note">Os produtos são carregados da API de categorias e itens. O preço e o estoque são exibidos quando informados pelo relacionamento de produto na resposta da API.</div>
   @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
-  @if (carregando()) { <p class="feedback" role="status">Carregando produtos da API...</p> }
+  @if (aviso()) { <p class="feedback" [class.feedback-error]="avisoErro()" role="status">{{ aviso() }}</p> }
+  @if (carregando()) { <p class="feedback" role="status">Carregando produtos...</p> }
 
   <section class="filter-panel" aria-label="Filtros de produtos">
     <label>
       Buscar produto
-      <input type="search" name="busca" placeholder="Digite o nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+      <input type="search" name="busca" placeholder="Nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
     </label>
     <label>
       Categoria
@@ -28,13 +29,21 @@
         }
       </select>
     </label>
-    <button class="btn-outline" type="button" (click)="busca.set(''); categoria.set('Todas')">Limpar filtros</button>
+    <label>
+      Ordenar por
+      <select name="ordenacao" [ngModel]="ordenacao()" (ngModelChange)="definirOrdenacao($event)">
+        <option value="nome">Nome (A–Z)</option>
+        <option value="menor-preco">Menor preço</option>
+        <option value="maior-preco">Maior preço</option>
+      </select>
+    </label>
+    <button class="btn-outline" type="button" (click)="limparFiltros()">Limpar filtros</button>
   </section>
 
   <p class="result-count">{{ filtrados().length }} produto(s) encontrado(s)</p>
 
-  @if (!carregando() && !erro() && produtos().length === 0) {
-    <p class="inline-warning">A API não retornou produtos ativos. Verifique os itens com tipo “P” no banco de dados.</p>
+  @if (!carregando() && !erro() && itens().length === 0) {
+    <p class="inline-warning">A API não retornou produtos. Cadastre produtos no módulo de gestão ou verifique o banco de dados.</p>
   }
 
   <div class="catalog-grid">
@@ -44,14 +53,13 @@
         <h2>{{ produto.nome }}</h2>
         <p>{{ produto.descricao }}</p>
         <footer>
-          <strong>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
-          @if (produto.estoque !== undefined) {
-            <span [class.stock-low]="produto.estoque <= 3" class="stock-label">
-              {{ produto.estoque > 0 ? produto.estoque + ' em estoque' : 'Sem estoque' }}
-            </span>
-          } @else {
-            <span class="stock-label">Estoque não informado</span>
-          }
+          <div>
+            <strong>{{ produto.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span class="stock-label" [class.stock-low]="produto.estoque !== undefined && produto.estoque <= 3">{{ estoqueTexto(produto) }}</span>
+          </div>
+          <button class="btn-primary btn-compacto" type="button" (click)="adicionarAoCarrinho(produto)" [disabled]="!podeComprar(produto)">
+            {{ podeComprar(produto) ? 'Adicionar' : 'Indisponível' }}
+          </button>
         </footer>
       </article>
     } @empty {

@@ -3,49 +3,63 @@
     <div>
       <p class="eyebrow">Portal do funcionário</p>
       <h1>Gerenciamento de funcionários</h1>
-      <p class="page-description">Cadastre, consulte, edite e exclua funcionários.</p>
+      <p class="page-description">Vincule uma pessoa já cadastrada como funcionária, informe o cargo e a data de admissão.</p>
     </div>
-    <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/cadastro">Cadastrar nova pessoa</a>
+      <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    </div>
   </header>
 
   <section class="form-panel">
-    <h2>{{ editandoId() === null ? 'Cadastrar funcionário' : 'Editar funcionário' }}</h2>
-    <form (ngSubmit)="salvar()" #formFuncionario="ngForm">
+    <h2>{{ editandoId() === null ? 'Vincular funcionário' : 'Editar funcionário' }}</h2>
+    <form (ngSubmit)="salvar()" novalidate>
       <div class="form-grid">
-        <label>Nome completo
-          <input name="nome" [(ngModel)]="nome" placeholder="Nome do funcionário">
-        </label>
-        <label>CPF
-          <input name="cpf" [(ngModel)]="cpf" placeholder="Somente números">
-        </label>
-        <label>E-mail
-          <input type="email" name="email" [(ngModel)]="email" placeholder="nome@empresa.com">
-        </label>
-        <label>Telefone
-          <input type="tel" name="telefone" [(ngModel)]="telefone" placeholder="DDD + número">
-        </label>
-        <label>Cargo / função
-          <input name="cargo" [(ngModel)]="cargo" placeholder="Ex.: Atendente">
+        @if (editandoId() === null) {
+          <label class="span-two">Pessoa cadastrada
+            <select name="pessoa" [class.invalido]="erro('idPessoa')" [ngModel]="form().idPessoa"
+              (ngModelChange)="form.set({ ...form(), idPessoa: $event ? +$event : null })">
+              <option [ngValue]="null">Selecione uma pessoa</option>
+              @for (pessoa of pessoasDisponiveis(); track pessoa.id) {
+                <option [ngValue]="pessoa.id">{{ pessoa.nome }} — CPF {{ pessoa.cpf }}</option>
+              }
+            </select>
+            @if (erro('idPessoa')) { <span class="field-error">{{ erro('idPessoa') }}</span> }
+            @if (pessoasDisponiveis().length === 0 && !carregando()) {
+              <span class="field-error">Nenhuma pessoa disponível. Cadastre a pessoa primeiro.</span>
+            }
+          </label>
+        } @else {
+          <label class="span-two">Pessoa
+            <input [value]="nomePessoaSelecionada()" disabled>
+          </label>
+        }
+        <label>Cargo
+          <input name="cargo" maxlength="20" list="cargos-sugeridos" placeholder="Ex.: Atendente"
+            [class.invalido]="erro('cargo')" [ngModel]="form().cargo"
+            (ngModelChange)="form.set({ ...form(), cargo: $event })">
+          <datalist id="cargos-sugeridos">
+            @for (cargo of cargosSugeridos; track cargo) { <option [value]="cargo"></option> }
+          </datalist>
+          @if (erro('cargo')) { <span class="field-error">{{ erro('cargo') }}</span> }
         </label>
         <label>Data de admissão
-          <input type="date" name="dataAdmissao" [(ngModel)]="dataAdmissao">
-        </label>
-        <label class="checkbox-field">
-          <input type="checkbox" name="ativo" [(ngModel)]="ativo">
-          Funcionário ativo
+          <input type="date" name="dataAdmissao" [max]="dataHoje()" [class.invalido]="erro('dataAdmissao')"
+            [ngModel]="form().dataAdmissao" (ngModelChange)="form.set({ ...form(), dataAdmissao: $event })">
+          @if (erro('dataAdmissao')) { <span class="field-error">{{ erro('dataAdmissao') }}</span> }
         </label>
       </div>
       <div class="form-actions">
-        <button class="btn-primary" type="submit">
-          {{ editandoId() === null ? 'Cadastrar funcionário' : 'Salvar alterações' }}
+        <button class="btn-primary" type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : (editandoId() === null ? 'Vincular funcionário' : 'Salvar alterações') }}
         </button>
         @if (editandoId() !== null) {
-          <button class="btn-outline" type="button" (click)="cancelarEdicao()">Cancelar edição</button>
+          <button class="btn-outline" type="button" (click)="cancelar()">Cancelar edição</button>
         }
       </div>
     </form>
     @if (mensagem()) {
-      <p class="feedback" [class.feedback-error]="erro()" role="status">{{ mensagem() }}</p>
+      <p class="feedback" [class.feedback-error]="mensagemErro()" role="status">{{ mensagem() }}</p>
     }
   </section>
 
@@ -53,13 +67,15 @@
     <div class="section-heading">
       <div>
         <h2>Funcionários cadastrados</h2>
-        <p>{{ funcionarios().length }} registro(s)</p>
+        <p>{{ filtrados().length }} de {{ funcionarios().length }} registro(s)</p>
       </div>
-      <input class="search-input" type="search" name="busca" placeholder="Buscar por nome, CPF, e-mail ou cargo" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+      <input class="search-input" type="search" name="busca" placeholder="Buscar por nome, CPF, e-mail ou cargo"
+        [ngModel]="busca()" (ngModelChange)="busca.set($event)">
     </div>
+    @if (carregando()) { <p class="feedback" role="status">Carregando funcionários...</p> }
     <div class="table-scroll">
       <table>
-        <thead><tr><th>ID local</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Cargo</th><th>Admissão</th><th>Status</th><th>Ações</th></tr></thead>
+        <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Cargo</th><th>Admissão</th><th>Status</th><th>Ações</th></tr></thead>
         <tbody>
           @for (funcionario of filtrados(); track funcionario.id) {
             <tr>
@@ -72,7 +88,7 @@
               <td><span class="status-pill" [class.status-inactive]="!funcionario.ativo">{{ funcionario.ativo ? 'Ativo' : 'Inativo' }}</span></td>
               <td class="actions-cell">
                 <button class="btn-small" type="button" (click)="editar(funcionario)">Editar</button>
-                <button class="btn-small btn-danger" type="button" (click)="excluir(funcionario)">Excluir</button>
+                <button class="btn-small btn-danger" type="button" (click)="excluir(funcionario)">Remover</button>
               </td>
             </tr>
           } @empty {

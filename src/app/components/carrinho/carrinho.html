@@ -1,1 +1,139 @@
-<p>carrinho works!</p>
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Loja</p>
+      <h1>Carrinho de compras</h1>
+      <p class="page-description">Revise os itens escolhidos nos catálogos. O estoque é conferido e baixado quando o pedido é finalizado.</p>
+    </div>
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/catalogo-produtos">Continuar comprando</a>
+    </div>
+  </header>
+
+  @if (mensagem()) {
+    <p class="feedback" [class.feedback-error]="mensagemErro()" role="status">{{ mensagem() }}</p>
+  }
+
+  @if (pedidoCriado(); as pedido) {
+    <div class="demo-notice" role="status">
+      Pedido <strong>#{{ pedido.idAtendimento }}</strong> registrado com status pendente — total
+      {{ pedido.total | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}.
+      @if (atendente()) {
+        <a routerLink="/pedidos">Ver pedidos</a>
+      }
+    </div>
+  }
+
+  <section class="table-panel">
+    <div class="section-heading">
+      <div>
+        <h2>Itens do carrinho</h2>
+        <p>{{ quantidadeTotal() }} unidade(s) · total {{ valorTotal() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
+      </div>
+      @if (itens().length > 0) {
+        <button class="btn-outline" type="button" (click)="limpar()">Esvaziar carrinho</button>
+      }
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Item</th><th>Tipo</th><th>Categoria</th><th>Preço unit.</th><th>Quantidade</th><th>Subtotal</th><th></th></tr></thead>
+        <tbody>
+          @for (item of itens(); track item.tipoItem + '-' + item.id) {
+            <tr>
+              <td>{{ item.nome }}</td>
+              <td>{{ item.tipoItem === 'P' ? 'Produto' : 'Serviço' }}</td>
+              <td>{{ item.categoria }}</td>
+              <td>{{ item.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+              <td>
+                <input class="qtd-input" type="number" min="1" step="1" [attr.aria-label]="'Quantidade de ' + item.nome"
+                  [ngModel]="item.quantidade" (ngModelChange)="alterarQuantidade(item.id, item.tipoItem, $event)">
+                @if (item.tipoItem === 'P' && item.estoque !== undefined) {
+                  <span class="muted"> de {{ item.estoque }} em estoque</span>
+                }
+              </td>
+              <td><strong>{{ item.quantidade * item.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td>
+              <td><button class="btn-small btn-danger" type="button" (click)="remover(item.id, item.tipoItem, item.nome)">Remover</button></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="empty-state">Seu carrinho está vazio. <a routerLink="/catalogo-produtos">Ver produtos</a> ou <a routerLink="/catalogo-servicos">ver serviços</a>.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  @if (atendente()) {
+    <section class="form-panel">
+      <h2>Finalizar pedido</h2>
+      <p class="page-description">Modo atendente: escolha o cliente e o funcionário responsável pelo pedido.</p>
+      <form (ngSubmit)="finalizar()" novalidate>
+        <div class="form-grid">
+          <label>Cliente
+            <select name="cliente" [class.invalido]="erro('idPessoa')" [ngModel]="idCliente()" (ngModelChange)="idCliente.set($event ? +$event : null)">
+              <option [ngValue]="null">Selecione o cliente</option>
+              @for (cliente of clientes(); track cliente.id) {
+                <option [ngValue]="cliente.id">{{ cliente.nome }} ({{ cliente.cpf }})</option>
+              }
+            </select>
+            @if (erro('idPessoa')) { <span class="field-error">{{ erro('idPessoa') }}</span> }
+          </label>
+          <label>Funcionário responsável
+            <select name="funcionario" [class.invalido]="erro('idFuncionario')" [ngModel]="idFuncionario()" (ngModelChange)="idFuncionario.set($event ? +$event : null)">
+              <option [ngValue]="null">Selecione o funcionário</option>
+              @for (funcionario of funcionarios(); track funcionario.id) {
+                <option [ngValue]="funcionario.id">{{ funcionario.nome }} — {{ funcionario.cargo }}</option>
+              }
+            </select>
+            @if (erro('idFuncionario')) { <span class="field-error">{{ erro('idFuncionario') }}</span> }
+          </label>
+          <label>Data do pedido
+            <input type="date" name="data" [class.invalido]="erro('data')" [max]="dataHoje()" [ngModel]="data()" (ngModelChange)="data.set($event)">
+            @if (erro('data')) { <span class="field-error">{{ erro('data') }}</span> }
+          </label>
+        </div>
+        @if (erro('itens')) { <span class="field-error">{{ erro('itens') }}</span> }
+        <div class="form-actions">
+          <button class="btn-primary" type="submit" [disabled]="enviando() || itens().length === 0">
+            {{ enviando() ? 'Registrando...' : 'Finalizar pedido' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  } @else if (idCliente()) {
+    <section class="form-panel">
+      <h2>Finalizar pedido</h2>
+      <p class="page-description">Pedido de <strong>{{ nomeCliente() }}</strong>. O pedido fica pendente até a loja concluí-lo.</p>
+      <form (ngSubmit)="finalizar()" novalidate>
+        <div class="form-grid">
+          <label>Funcionário que vai atender
+            <select name="funcionario" [class.invalido]="erro('idFuncionario')" [ngModel]="idFuncionario()" (ngModelChange)="idFuncionario.set($event ? +$event : null)">
+              <option [ngValue]="null">Selecione o funcionário</option>
+              @for (funcionario of funcionarios(); track funcionario.id) {
+                <option [ngValue]="funcionario.id">{{ funcionario.nome }} — {{ funcionario.cargo }}</option>
+              }
+            </select>
+            @if (erro('idFuncionario')) { <span class="field-error">{{ erro('idFuncionario') }}</span> }
+          </label>
+          <label>Data do pedido
+            <input type="date" name="data" [class.invalido]="erro('data')" [max]="dataHoje()" [ngModel]="data()" (ngModelChange)="data.set($event)">
+            @if (erro('data')) { <span class="field-error">{{ erro('data') }}</span> }
+          </label>
+        </div>
+        @if (erro('itens')) { <span class="field-error">{{ erro('itens') }}</span> }
+        <div class="form-actions">
+          <button class="btn-primary" type="submit" [disabled]="enviando() || itens().length === 0">
+            {{ enviando() ? 'Registrando...' : 'Finalizar pedido' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  } @else {
+    <section class="form-panel">
+      <h2>Finalizar pedido</h2>
+      <p class="page-description">
+        Para finalizar, <a routerLink="/login">entre na sua conta</a>. Se ainda não tem cadastro, <a routerLink="/cadastro">cadastre-se</a>.
+      </p>
+    </section>
+  }
+</section>

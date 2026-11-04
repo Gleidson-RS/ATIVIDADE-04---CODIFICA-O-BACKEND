@@ -1,11 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { ItemCatalogo } from '../../models/gestao/gestao';
-import { DadosApiService } from '../../services/api/dados-api';
-import { mensagemErroApi } from '../../shared/erro-api';
+import { CatalogoBase, OrdenacaoCatalogo } from '../../shared/catalogo-base';
+import { TipoItem } from '../../models/gestao/gestao';
 
 @Component({
   selector: 'app-catalogo-produtos',
@@ -13,40 +11,15 @@ import { mensagemErroApi } from '../../shared/erro-api';
   templateUrl: './catalogo-produtos.html',
   styleUrl: './catalogo-produtos.css'
 })
-export class CatalogoProdutos {
-  readonly produtos = signal<ItemCatalogo[]>([]);
-  readonly categoria = signal('Todas');
-  readonly busca = signal('');
-  readonly carregando = signal(false);
-  readonly erro = signal('');
-  readonly categorias = computed(() => [
-    'Todas',
-    ...new Set(this.produtos().map(produto => produto.categoria))
-  ]);
-  readonly filtrados = computed(() => {
-    const termo = this.busca().trim().toLocaleLowerCase('pt-BR');
-    return this.produtos().filter(produto => {
-      const correspondeCategoria = this.categoria() === 'Todas' || produto.categoria === this.categoria();
-      const correspondeBusca = !termo ||
-        produto.nome.toLocaleLowerCase('pt-BR').includes(termo) ||
-        produto.descricao.toLocaleLowerCase('pt-BR').includes(termo);
-      return produto.ativo && correspondeCategoria && correspondeBusca;
-    });
-  });
+export class CatalogoProdutos extends CatalogoBase {
+  protected readonly tipo: TipoItem = 'P';
 
-  constructor(private dadosApi: DadosApiService) {
+  constructor() {
+    super();
     this.atualizar();
   }
 
-  atualizar(): void {
-    this.carregando.set(true);
-    this.erro.set('');
-    this.dadosApi.listarItensCatalogo()
-      .pipe(finalize(() => this.carregando.set(false)))
-      .subscribe({
-        next: itens => this.produtos.set(itens.filter(item => item.tipoItem === 'P')),
-        error: erro => this.erro.set(mensagemErroApi(erro, 'carregar o catálogo de produtos'))
-      });
+  definirOrdenacao(valor: string): void {
+    this.ordenacao.set(valor as OrdenacaoCatalogo);
   }
-
 }

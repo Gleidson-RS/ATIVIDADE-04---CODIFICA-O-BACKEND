@@ -1,5 +1,5 @@
 
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -16,6 +16,9 @@ import { mensagemErroApi } from '../../../shared/erro-api';
   styleUrl: './editar-cliente.css'
 })
 export class EditarCliente implements OnInit {
+  // Os campos do formulário são propriedades comuns, preenchidas depois da API: avisa o Angular.
+  private readonly cdr = inject(ChangeDetectorRef);
+
   // Campos do formulário (ngModel). Tudo como string: inputs de texto
   // preservam zero à esquerda do CPF/telefone e a API aceita string.
   id = 0;
@@ -88,6 +91,7 @@ export class EditarCliente implements OnInit {
         this.Complemento = endereco?.complemento ?? '';
 
         this.carregando.set(false);
+        this.cdr.markForCheck();
       },
       error: (erro) => {
         console.error('Erro ao carregar pessoa:', erro);

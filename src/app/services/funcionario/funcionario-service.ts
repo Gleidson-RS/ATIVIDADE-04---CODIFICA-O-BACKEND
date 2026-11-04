@@ -1,53 +1,67 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { Funcionario } from '../../models/gestao/gestao';
 
+// Formato de GET /api/Funcionario (FuncionarioRespostaDTO do back-end).
 export interface FuncionarioApi {
   idPessoa?: number;
-  idpessoa?: number;
-  nome?: string;
+  nome?: string | null;
+  cpf?: string | null;
+  email?: string | null;
+  telefone?: string | null;
+  ativoPessoa?: string | null;
+  cargo?: string | null;
+  dataAdmissao?: string | null;
+}
+
+export interface FuncionarioCadastro {
+  idPessoa: number;
+  cpf: string;
   cargo: string;
   dataAdmissao: string;
 }
 
-export interface FuncionarioCadastroApi {
-  idpessoa: number;
-  idPessoa?: number;
-  cpf?: string;
+export interface FuncionarioAtualizacao {
   cargo: string;
   dataAdmissao: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+/** Vínculo de funcionário (tabela funcionario) sobre uma pessoa já cadastrada. */
+@Injectable({ providedIn: 'root' })
 export class FuncionarioService {
-
   private readonly apiUrl = `${environment.apiBaseUrl}/Funcionario`;
 
   constructor(private http: HttpClient) {}
 
-  listarFuncionarios(): Observable<FuncionarioApi[]> {
-    return this.http.get<FuncionarioApi[]>(this.apiUrl);
+  listar(): Observable<Funcionario[]> {
+    return this.http.get<FuncionarioApi[]>(this.apiUrl).pipe(
+      map(lista => (lista ?? [])
+        .map(f => ({
+          id: Number(f.idPessoa ?? 0),
+          nome: String(f.nome ?? ''),
+          cpf: String(f.cpf ?? '').replace(/\D/g, ''),
+          email: String(f.email ?? ''),
+          telefone: String(f.telefone ?? '').replace(/\D/g, ''),
+          cargo: String(f.cargo ?? ''),
+          dataAdmissao: String(f.dataAdmissao ?? '').substring(0, 10),
+          ativo: String(f.ativoPessoa ?? 'S').toUpperCase() === 'S'
+        }))
+        .filter(f => f.id > 0)
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')))
+    );
   }
 
-  buscarFuncionario(id: number): Observable<FuncionarioApi> {
-    return this.http.get<FuncionarioApi>(`${this.apiUrl}/${id}`);
+  criar(dados: FuncionarioCadastro): Observable<unknown> {
+    return this.http.post(this.apiUrl, dados);
   }
 
-  adicionarFuncionario(dados: FuncionarioCadastroApi): Observable<unknown> {
-    return this.http.post(this.apiUrl, dados, { responseType: 'text' });
-  }
-
-  alterarFuncionario(
-    id: number,
-    dados: FuncionarioCadastroApi
-  ): Observable<unknown> {
+  alterar(id: number, dados: FuncionarioAtualizacao): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/${id}`, dados, { responseType: 'text' });
   }
 
-  excluirFuncionario(id: number): Observable<unknown> {
+  excluir(id: number): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
   }
 }

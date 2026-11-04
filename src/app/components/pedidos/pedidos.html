@@ -1,0 +1,106 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Operações da loja</p>
+      <h1>Gerenciamento de pedidos</h1>
+      <p class="page-description">Acompanhe os pedidos, conclua os pendentes ou cancele-os. Ao cancelar, o estoque dos produtos é devolvido.</p>
+    </div>
+    <div class="form-actions">
+      <button class="btn-outline" type="button" (click)="carregar()" [disabled]="carregando()">Atualizar</button>
+      <a class="btn-outline" routerLink="/atendimentos">Novo atendimento</a>
+      <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    </div>
+  </header>
+
+  @if (mensagem()) {
+    <p class="feedback" [class.feedback-error]="mensagemErro()" role="status">{{ mensagem() }}</p>
+  }
+  @if (carregando()) { <p class="feedback" role="status">Carregando pedidos...</p> }
+
+  <section class="resumo-grid" aria-label="Resumo dos pedidos">
+    <article class="resumo-card"><span>Pendentes</span><strong>{{ resumo().pendentes }}</strong></article>
+    <article class="resumo-card"><span>Concluídos</span><strong>{{ resumo().concluidos }}</strong></article>
+    <article class="resumo-card"><span>Cancelados</span><strong>{{ resumo().cancelados }}</strong></article>
+    <article class="resumo-card"><span>Faturamento (concluídos)</span><strong>{{ resumo().faturado | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></article>
+  </section>
+
+  <section class="filter-panel" aria-label="Filtros de pedidos">
+    <label>
+      Buscar por cliente ou nº do pedido
+      <input type="search" name="busca" placeholder="Nome do cliente ou número" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+    </label>
+    <label>
+      Situação
+      <select name="status" [ngModel]="filtroStatus()" (ngModelChange)="filtroStatus.set($event)">
+        <option value="Todos">Todas</option>
+        <option value="P">Pendentes</option>
+        <option value="F">Concluídos</option>
+        <option value="C">Cancelados</option>
+      </select>
+    </label>
+    <button class="btn-outline" type="button" (click)="busca.set(''); filtroStatus.set('Todos')">Limpar filtros</button>
+  </section>
+
+  <p class="result-count">{{ filtrados().length }} pedido(s) encontrado(s)</p>
+
+  <section class="table-panel">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Funcionário(s)</th><th>Itens</th><th>Total</th><th>Situação</th><th>Ações</th></tr>
+        </thead>
+        <tbody>
+          @for (pedido of filtrados(); track pedido.idAtendimento) {
+            <tr>
+              <td>#{{ pedido.idAtendimento }}</td>
+              <td>{{ formatarData(pedido.dataAtendimento) }}</td>
+              <td>{{ pedido.nomePessoa || ('ID ' + pedido.idPessoa) }}</td>
+              <td>
+                {{ nomesFuncionarios(pedido) }}
+              </td>
+              <td>
+                <button class="link-button" type="button" (click)="alternarDetalhes(pedido)">
+                  {{ (pedido.itens ?? []).length }} item(ns) {{ expandido() === pedido.idAtendimento ? '▲' : '▼' }}
+                </button>
+              </td>
+              <td><strong>{{ total(pedido) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td>
+              <td>
+                <span class="status-pill" [class.status-inactive]="pedido.statusAtendimento === 'C'">{{ rotuloStatus(pedido) }}</span>
+              </td>
+              <td class="actions-cell">
+                @if (pedido.statusAtendimento === 'P') {
+                  <button class="btn-small" type="button" (click)="concluir(pedido)" [disabled]="processandoId() === pedido.idAtendimento">Concluir</button>
+                  <button class="btn-small btn-danger" type="button" (click)="cancelar(pedido)" [disabled]="processandoId() === pedido.idAtendimento">Cancelar</button>
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+            </tr>
+            @if (expandido() === pedido.idAtendimento) {
+              <tr class="detalhe-linha">
+                <td colspan="8">
+                  <table class="tabela-itens">
+                    <thead><tr><th>Item</th><th>Qtd.</th><th>Valor unit.</th><th>Subtotal</th><th>Funcionário</th></tr></thead>
+                    <tbody>
+                      @for (linha of pedido.itens ?? []; track linha.idItem) {
+                        <tr>
+                          <td>{{ linha.item || ('Item #' + linha.idItem) }}</td>
+                          <td>{{ linha.quantidade }}</td>
+                          <td>{{ linha.valorUnitario | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                          <td>{{ subtotal(linha) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                          <td>{{ linha.nomeFuncionario || ('ID ' + linha.idFuncionario) }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr><td colspan="8" class="empty-state">Nenhum pedido encontrado com os filtros atuais.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

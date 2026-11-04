@@ -3,15 +3,13 @@
     <div>
       <p class="eyebrow">Portal do funcionário</p>
       <h1>Registro de atendimentos</h1>
-      <p class="page-description">Registre atendimentos relacionando clientes, itens e funcionários.</p>
+      <p class="page-description">Relacione um cliente, o funcionário responsável e um ou mais serviços ou produtos. Produtos dão baixa automática no estoque.</p>
     </div>
-    <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/pedidos">Gerenciar pedidos</a>
+      <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    </div>
   </header>
-
-  <div class="demo-notice" role="note">
-    Os atendimentos são enviados à API. Como o Swagger fornecido não possui rota de consulta/cadastro de funcionários,
-    informe o ID de uma pessoa que já esteja cadastrada na tabela funcionario do MySQL. Um ID sem vínculo nessa tabela será rejeitado pela API.
-  </div>
 
   @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
   @if (mensagem()) { <p class="feedback" role="status">{{ mensagem() }}</p> }
@@ -19,41 +17,78 @@
 
   <section class="form-panel">
     <h2>Novo atendimento</h2>
-    <form (ngSubmit)="salvar()">
+    <form (ngSubmit)="salvar()" novalidate>
       <div class="form-grid">
         <label>Cliente
-          <select name="cliente" [ngModel]="clienteId()" (ngModelChange)="clienteId.set($event)" required>
-            <option [ngValue]="null" disabled>Selecione um cliente</option>
-            @for (cliente of clientes(); track cliente.id) { <option [ngValue]="cliente.id">{{ cliente.nome }}</option> }
-          </select>
-        </label>
-        <label>ID do funcionário no banco de dados
-          <input type="number" name="funcionarioId" [(ngModel)]="funcionarioId" min="1" step="1" required placeholder="Ex.: 27">
-        </label>
-        <label>Tipo de item
-          <select name="tipoItem" [ngModel]="categoriaItem()" (ngModelChange)="trocarTipo($event)">
-            <option value="Serviço">Serviço</option>
-            <option value="Produto">Produto</option>
-          </select>
-        </label>
-        <label>Item
-          <select name="item" [ngModel]="itemId()" (ngModelChange)="itemId.set($event)" required>
-            <option [ngValue]="null" disabled>Selecione um {{ categoriaItem().toLowerCase() }}</option>
-            @for (item of itensDisponiveis(); track item.id) {
-              <option [ngValue]="item.id">{{ item.nome }} — {{ item.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</option>
+          <select name="cliente" [class.invalido]="erroCampo('idPessoa')" [ngModel]="idCliente()" (ngModelChange)="idCliente.set($event ? +$event : null)">
+            <option [ngValue]="null">Selecione um cliente</option>
+            @for (cliente of clientes(); track cliente.id) {
+              <option [ngValue]="cliente.id">{{ cliente.nome }} ({{ cliente.cpf }})</option>
             }
           </select>
+          @if (erroCampo('idPessoa')) { <span class="field-error">{{ erroCampo('idPessoa') }}</span> }
         </label>
-        <label>Quantidade
-          <input type="number" name="quantidade" [(ngModel)]="quantidade" min="1" step="1" required>
+        <label>Funcionário responsável
+          <select name="funcionario" [class.invalido]="erroCampo('idFuncionario')" [ngModel]="idFuncionario()" (ngModelChange)="idFuncionario.set($event ? +$event : null)">
+            <option [ngValue]="null">Selecione um funcionário</option>
+            @for (funcionario of funcionarios(); track funcionario.id) {
+              <option [ngValue]="funcionario.id">{{ funcionario.nome }} — {{ funcionario.cargo }}</option>
+            }
+          </select>
+          @if (erroCampo('idFuncionario')) { <span class="field-error">{{ erroCampo('idFuncionario') }}</span> }
         </label>
         <label>Data do atendimento
-          <input type="date" name="data" [(ngModel)]="data" required>
+          <input type="date" name="data" [max]="dataHoje()" [class.invalido]="erroCampo('data')" [ngModel]="data()" (ngModelChange)="data.set($event)">
+          @if (erroCampo('data')) { <span class="field-error">{{ erroCampo('data') }}</span> }
         </label>
       </div>
+
+      <h3 class="subtitulo">Itens do atendimento</h3>
+      @if (erroCampo('itens')) { <span class="field-error">{{ erroCampo('itens') }}</span> }
+      <div class="table-scroll">
+        <table class="tabela-linhas">
+          <thead><tr><th>Tipo</th><th>Item</th><th>Quantidade</th><th>Preço unit.</th><th>Subtotal</th><th></th></tr></thead>
+          <tbody>
+            @for (linha of linhas(); track linha.uid) {
+              <tr>
+                <td>
+                  <select name="tipo{{ linha.uid }}" [ngModel]="linha.tipo" (ngModelChange)="alterarLinha(linha.uid, { tipo: $event, idItem: null })">
+                    <option value="S">Serviço</option>
+                    <option value="P">Produto</option>
+                  </select>
+                </td>
+                <td>
+                  <select name="item{{ linha.uid }}" [class.invalido]="!!erroLinha(linha)" [ngModel]="linha.idItem"
+                    (ngModelChange)="alterarLinha(linha.uid, { idItem: $event ? +$event : null })">
+                    <option [ngValue]="null">Selecione...</option>
+                    @for (item of itensDoTipo(linha.tipo); track item.id) {
+                      <option [ngValue]="item.id">
+                        {{ item.nome }}{{ item.estoque !== undefined ? ' (estoque: ' + item.estoque + ')' : '' }}
+                      </option>
+                    }
+                  </select>
+                  @if (erroLinha(linha)) { <span class="field-error">{{ erroLinha(linha) }}</span> }
+                </td>
+                <td>
+                  <input type="number" min="1" step="1" name="qtd{{ linha.uid }}" [class.invalido]="!!erroLinha(linha)"
+                    [ngModel]="linha.quantidade" (ngModelChange)="alterarLinha(linha.uid, { quantidade: +$event })">
+                </td>
+                <td>{{ precoDaLinha(linha) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                <td>{{ precoDaLinha(linha) * linha.quantidade | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                <td><button class="btn-small btn-danger" type="button" (click)="removerLinha(linha.uid)" [disabled]="linhas().length === 1">Remover</button></td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr><td colspan="4"><strong>Total estimado</strong></td><td colspan="2"><strong>{{ totalEstimado() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></td></tr>
+          </tfoot>
+        </table>
+      </div>
+
       <div class="form-actions">
+        <button class="btn-outline" type="button" (click)="adicionarLinha()">+ Adicionar item</button>
         <button class="btn-primary" type="submit" [disabled]="salvando() || carregando()">
-          {{ salvando() ? 'Enviando...' : 'Registrar atendimento' }}
+          {{ salvando() ? 'Registrando...' : 'Registrar atendimento' }}
         </button>
         <button class="btn-outline" type="button" (click)="carregarDados()" [disabled]="carregando()">Atualizar listas</button>
       </div>
@@ -62,23 +97,23 @@
 
   <section class="table-panel">
     <div class="section-heading">
-      <div><h2>Atendimentos registrados na API</h2><p>{{ atendimentos().length }} registro(s)</p></div>
+      <div><h2>Atendimentos registrados</h2><p>{{ atendimentos().length }} registro(s)</p></div>
     </div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>ID</th><th>Data</th><th>Cliente</th><th>Funcionário</th><th>Itens</th><th>Status</th></tr></thead>
+        <thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Funcionário(s)</th><th>Itens</th><th>Situação</th></tr></thead>
         <tbody>
           @for (atendimento of atendimentos(); track atendimento.idAtendimento) {
             <tr>
-              <td>{{ atendimento.idAtendimento }}</td>
+              <td>#{{ atendimento.idAtendimento }}</td>
               <td>{{ formatarData(atendimento.dataAtendimento) }}</td>
               <td>{{ atendimento.nomePessoa || ('ID ' + atendimento.idPessoa) }}</td>
               <td>{{ formatarFuncionarios(atendimento) }}</td>
               <td>{{ formatarItens(atendimento) }}</td>
-              <td><span class="status-pill">{{ formatarStatus(atendimento.statusAtendimento) }}</span></td>
+              <td><span class="status-pill" [class.status-inactive]="atendimento.statusAtendimento === 'C'">{{ rotuloStatus(atendimento) }}</span></td>
             </tr>
           } @empty {
-            <tr><td colspan="6" class="empty-state">Nenhum atendimento retornado pela API.</td></tr>
+            <tr><td colspan="6" class="empty-state">Nenhum atendimento registrado.</td></tr>
           }
         </tbody>
       </table>

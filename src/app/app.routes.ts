@@ -15,6 +15,9 @@ import { CatalogoProdutos } from './components/catalogo-produtos/catalogo-produt
 import { Funcionarios } from './components/funcionarios/funcionarios';
 import { Atendimentos } from './components/atendimentos/atendimentos';
 import { Estoque } from './components/estoque/estoque';
+import { Categorias } from './components/categorias/categorias';
+import { GestaoItens } from './components/gestao-itens/gestao-itens';
+import { Pedidos } from './components/pedidos/pedidos';
 
 export const routes: Routes = [
 
@@ -94,6 +97,32 @@ export const routes: Routes = [
     {
         path: 'estoque',
         component: Estoque,
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'categorias',
+        component: Categorias,
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'gerenciar-produtos',
+        component: GestaoItens,
+        data: { tipo: 'P' },
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'gerenciar-servicos',
+        component: GestaoItens,
+        data: { tipo: 'S' },
+        canActivate: [adminGuard]
+    },
+
+    {
+        path: 'pedidos',
+        component: Pedidos,
         canActivate: [adminGuard]
     },
 
