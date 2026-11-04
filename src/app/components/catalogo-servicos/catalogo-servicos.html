@@ -2,23 +2,24 @@
   <header class="page-title-row">
     <div>
       <p class="eyebrow">Catálogo</p>
-      <h1>Serviços esportivos</h1>
-      <p class="page-description">Consulte os serviços disponíveis e filtre por categoria.</p>
+      <h1>Serviços</h1>
+      <p class="page-description">Consulte os serviços disponíveis, filtre por categoria e adicione-os ao carrinho.</p>
     </div>
     <div class="form-actions">
+      <a class="btn-outline" routerLink="/carrinho">Ver carrinho</a>
       <button class="btn-outline" type="button" (click)="atualizar()" [disabled]="carregando()">Atualizar catálogo</button>
-      <a class="btn-outline" routerLink="/home">Voltar à página inicial</a>
+      <a class="btn-outline" routerLink="/home">Página inicial</a>
     </div>
   </header>
 
-  <div class="demo-notice" role="note">Os serviços são carregados da API de categorias e itens. Somente registros ativos com tipo de item “S” são exibidos.</div>
   @if (erro()) { <p class="feedback feedback-error" role="alert">{{ erro() }}</p> }
-  @if (carregando()) { <p class="feedback" role="status">Carregando serviços da API...</p> }
+  @if (aviso()) { <p class="feedback" [class.feedback-error]="avisoErro()" role="status">{{ aviso() }}</p> }
+  @if (carregando()) { <p class="feedback" role="status">Carregando serviços...</p> }
 
   <section class="filter-panel" aria-label="Filtros de serviços">
     <label>
       Buscar serviço
-      <input type="search" name="busca" placeholder="Digite o nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+      <input type="search" name="busca" placeholder="Nome ou descrição" [ngModel]="busca()" (ngModelChange)="busca.set($event)">
     </label>
     <label>
       Categoria
@@ -28,13 +29,21 @@
         }
       </select>
     </label>
-    <button class="btn-outline" type="button" (click)="busca.set(''); categoria.set('Todas')">Limpar filtros</button>
+    <label>
+      Ordenar por
+      <select name="ordenacao" [ngModel]="ordenacao()" (ngModelChange)="definirOrdenacao($event)">
+        <option value="nome">Nome (A–Z)</option>
+        <option value="menor-preco">Menor preço</option>
+        <option value="maior-preco">Maior preço</option>
+      </select>
+    </label>
+    <button class="btn-outline" type="button" (click)="limparFiltros()">Limpar filtros</button>
   </section>
 
   <p class="result-count">{{ filtrados().length }} serviço(s) encontrado(s)</p>
 
-  @if (!carregando() && !erro() && servicos().length === 0) {
-    <p class="inline-warning">A API não retornou serviços ativos. Verifique se existem itens com tipo “S” cadastrados no banco de dados.</p>
+  @if (!carregando() && !erro() && itens().length === 0) {
+    <p class="inline-warning">Nenhum serviço cadastrado. Cadastre serviços em Gestão de serviços no Portal do Funcionário.</p>
   }
 
   <div class="catalog-grid">
@@ -44,8 +53,11 @@
         <h2>{{ servico.nome }}</h2>
         <p>{{ servico.descricao }}</p>
         <footer>
-          <strong>{{ servico.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
-          <span class="status-active">Disponível</span>
+          <div>
+            <strong>{{ servico.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span class="status-active">Disponível</span>
+          </div>
+          <button class="btn-primary btn-compacto" type="button" (click)="adicionarAoCarrinho(servico)">Adicionar</button>
         </footer>
       </article>
     } @empty {

@@ -1,0 +1,18 @@
+.invalido {
+  border-color: #c0392b !important;
+}
+
+.filtros-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtros-inline select {
+  min-width: 200px;
+  padding: 10px 12px;
+  border: 1px solid #cfd8cf;
+  border-radius: 7px;
+  background: #fff;
+}

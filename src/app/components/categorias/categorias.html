@@ -1,0 +1,73 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Cadastros</p>
+      <h1>Categorias</h1>
+      <p class="page-description">Organize produtos e serviços em categorias. Categorias com itens vinculados não podem ser excluídas.</p>
+    </div>
+    <div class="form-actions">
+      <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    </div>
+  </header>
+
+  <section class="form-panel">
+    <h2>{{ editandoId() === null ? 'Nova categoria' : 'Editar categoria' }}</h2>
+    <form (ngSubmit)="salvar()" novalidate>
+      <div class="form-grid">
+        <label>Nome da categoria
+          <input name="nome" maxlength="40" placeholder="Ex.: Informática"
+            [class.invalido]="erro('nome')"
+            [ngModel]="form().nome" (ngModelChange)="form.set({ nome: $event })">
+          @if (erro('nome')) { <span class="field-error">{{ erro('nome') }}</span> }
+        </label>
+        <label>ID
+          <input [value]="editandoId() ?? proximoId()" disabled>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : (editandoId() === null ? 'Cadastrar categoria' : 'Salvar alterações') }}
+        </button>
+        @if (editandoId() !== null) {
+          <button class="btn-outline" type="button" (click)="cancelar()">Cancelar edição</button>
+        }
+      </div>
+    </form>
+    @if (mensagem()) {
+      <p class="feedback" [class.feedback-error]="mensagemErro()" role="status">{{ mensagem() }}</p>
+    }
+  </section>
+
+  <section class="table-panel">
+    <div class="section-heading">
+      <div>
+        <h2>Categorias cadastradas</h2>
+        <p>{{ categorias().length }} categoria(s)</p>
+      </div>
+      <input class="search-input" type="search" name="busca" placeholder="Buscar por nome ou ID"
+        [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+    </div>
+    @if (carregando()) { <p class="feedback" role="status">Carregando categorias...</p> }
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>ID</th><th>Nome</th><th>Itens vinculados</th><th>Ações</th></tr></thead>
+        <tbody>
+          @for (categoria of filtradas(); track categoria.id) {
+            <tr>
+              <td>{{ categoria.id }}</td>
+              <td>{{ categoria.nome }}</td>
+              <td>{{ categoria.totalItens }}</td>
+              <td class="actions-cell">
+                <button class="btn-small" type="button" (click)="editar(categoria)">Editar</button>
+                <button class="btn-small btn-danger" type="button" (click)="excluir(categoria)"
+                  [title]="categoria.totalItens > 0 ? 'Possui itens vinculados' : 'Excluir categoria'">Excluir</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="empty-state">Nenhuma categoria encontrada.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

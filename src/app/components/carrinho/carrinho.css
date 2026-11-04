@@ -1,0 +1,13 @@
+.invalido {
+  border-color: #c0392b !important;
+}
+
+.qtd-input {
+  width: 90px !important;
+  display: inline-block;
+}
+
+.muted {
+  color: #7d877d;
+  font-size: 12px;
+}

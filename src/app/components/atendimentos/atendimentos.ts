@@ -1,16 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
-import { Pessoas } from '../../models/pessoas/pessoa';
-import { ItemCatalogo } from '../../models/gestao/gestao';
-import { AtendimentoApi, DadosApiService } from '../../services/api/dados-api';
-import { PessoaService } from '../../services/pessoa/pessoa-service';
+import { finalize, forkJoin } from 'rxjs';
+import { Funcionario, ItemCatalogo, TipoItem } from '../../models/gestao/gestao';
+import { FuncionarioService } from '../../services/funcionario/funcionario-service';
+import { ItemService } from '../../services/item/item-service';
+import { AtendimentoApi, PedidoService } from '../../services/pedido/pedido-service';
+import { PessoaResumo, PessoaService } from '../../services/pessoa/pessoa-service';
 import { mensagemErroApi } from '../../shared/erro-api';
+import { validarAtendimento, validarQuantidade } from '../../shared/validacoes-gestao';
 
-interface ClienteOpcao { id: number; nome: string; }
+interface LinhaAtendimento {
+  uid: number;
+  tipo: TipoItem;
+  idItem: number | null;
+  quantidade: number;
+}
 
+/**
+ * Registro de atendimentos: um cliente, um funcionário responsável e um ou mais itens
+ * (serviços e/ou produtos). O pedido é gravado via POST /api/Pedido, que dá baixa no estoque.
+ */
 @Component({
   selector: 'app-atendimentos',
   imports: [CommonModule, FormsModule, RouterLink],
@@ -18,136 +29,165 @@ interface ClienteOpcao { id: number; nome: string; }
   styleUrl: './atendimentos.css'
 })
 export class Atendimentos {
-  readonly clientes = signal<ClienteOpcao[]>([]);
+  private readonly pessoaService = inject(PessoaService);
+  private readonly funcionarioService = inject(FuncionarioService);
+  private readonly itemService = inject(ItemService);
+  private readonly pedidoService = inject(PedidoService);
+
+  readonly clientes = signal<PessoaResumo[]>([]);
+  readonly funcionarios = signal<Funcionario[]>([]);
   readonly servicos = signal<ItemCatalogo[]>([]);
   readonly produtos = signal<ItemCatalogo[]>([]);
   readonly atendimentos = signal<AtendimentoApi[]>([]);
-  readonly erro = signal('');
-  readonly mensagem = signal('');
   readonly carregando = signal(false);
   readonly salvando = signal(false);
-  readonly categoriaItem = signal<'Serviço' | 'Produto'>('Serviço');
-  readonly clienteId = signal<number | null>(null);
-  readonly itemId = signal<number | null>(null);
-  readonly itensDisponiveis = computed(() =>
-    this.categoriaItem() === 'Serviço' ? this.servicos() : this.produtos()
-  );
+  readonly erro = signal('');
+  readonly mensagem = signal('');
+  readonly tentou = signal(false);
 
-  funcionarioId: number | null = null;
-  quantidade = 1;
-  data = this.dataLocalAtual();
+  private proximoUid = 1;
 
-  constructor(
-    private pessoaService: PessoaService,
-    private dadosApi: DadosApiService
-  ) {
+  readonly idCliente = signal<number | null>(null);
+  readonly idFuncionario = signal<number | null>(null);
+  readonly data = signal(this.dataHoje());
+  readonly linhas = signal<LinhaAtendimento[]>([this.novaLinha('S')]);
+
+  readonly erros = computed(() => validarAtendimento({
+    idPessoa: this.idCliente(),
+    idFuncionario: this.idFuncionario(),
+    data: this.data(),
+    quantidadeLinhas: this.linhas().length
+  }));
+
+  readonly totalEstimado = computed(() =>
+    this.linhas().reduce((soma, linha) => soma + this.precoDaLinha(linha) * linha.quantidade, 0));
+
+  constructor() {
     this.carregarDados();
   }
 
+  erroCampo(campo: string): string {
+    return this.tentou() ? (this.erros()[campo] ?? '') : '';
+  }
+
   carregarDados(): void {
-    this.erro.set('');
     this.carregando.set(true);
-    let pendentes = 3;
-    const concluir = (): void => {
-      pendentes--;
-      if (pendentes === 0) this.carregando.set(false);
-    };
-
-    this.pessoaService.listarPessoas().pipe(finalize(concluir)).subscribe({
-      next: (dados: Pessoas[]) => {
-        const lista = (dados as any[]).map(pessoa => ({
-          id: Number(pessoa.idPessoa ?? pessoa.id ?? pessoa.IdPessoa),
-          nome: String(pessoa.nome ?? '')
-        })).filter(pessoa => pessoa.id > 0 && pessoa.nome);
-        this.clientes.set(lista);
+    this.erro.set('');
+    forkJoin({
+      clientes: this.pessoaService.listarResumo(),
+      funcionarios: this.funcionarioService.listar(),
+      servicos: this.itemService.listar('S'),
+      produtos: this.itemService.listar('P'),
+      atendimentos: this.pedidoService.listar()
+    }).pipe(finalize(() => this.carregando.set(false))).subscribe({
+      next: dados => {
+        this.clientes.set(dados.clientes);
+        this.funcionarios.set(dados.funcionarios);
+        this.servicos.set(dados.servicos.filter(s => s.ativo));
+        this.produtos.set(dados.produtos.filter(p => p.ativo));
+        this.atendimentos.set(dados.atendimentos ?? []);
       },
-      error: erro => this.erro.set(mensagemErroApi(erro, 'carregar os clientes'))
-    });
-
-    this.dadosApi.listarItensCatalogo().pipe(finalize(concluir)).subscribe({
-      next: itens => {
-        this.servicos.set(itens.filter(item => item.ativo && item.tipoItem === 'S'));
-        this.produtos.set(itens.filter(item => item.ativo && item.tipoItem === 'P'));
-      },
-      error: erro => this.erro.set(mensagemErroApi(erro, 'carregar serviços e produtos'))
-    });
-
-    this.dadosApi.listarAtendimentos().pipe(finalize(concluir)).subscribe({
-      next: dados => this.atendimentos.set(dados ?? []),
-      error: erro => this.erro.set(mensagemErroApi(erro, 'carregar os atendimentos'))
+      error: erro => this.erro.set(mensagemErroApi(erro, 'carregar os dados do atendimento'))
     });
   }
 
-  carregarAtendimentos(): void {
-    this.dadosApi.listarAtendimentos().subscribe({
-      next: dados => this.atendimentos.set(dados ?? []),
+  atualizarLista(): void {
+    this.pedidoService.listar().subscribe({
+      next: lista => this.atendimentos.set(lista ?? []),
       error: erro => this.erro.set(mensagemErroApi(erro, 'atualizar os atendimentos'))
     });
   }
 
-  trocarTipo(tipo: 'Serviço' | 'Produto'): void {
-    this.categoriaItem.set(tipo);
-    this.itemId.set(null);
+  itensDoTipo(tipo: TipoItem): ItemCatalogo[] {
+    return tipo === 'S' ? this.servicos() : this.produtos();
+  }
+
+  novaLinha(tipo: TipoItem): LinhaAtendimento {
+    return { uid: this.proximoUid++, tipo, idItem: null, quantidade: 1 };
+  }
+
+  adicionarLinha(): void {
+    this.linhas.update(lista => [...lista, this.novaLinha('S')]);
+  }
+
+  removerLinha(uid: number): void {
+    this.linhas.update(lista => lista.length > 1 ? lista.filter(l => l.uid !== uid) : lista);
+  }
+
+  alterarLinha(uid: number, campo: Partial<LinhaAtendimento>): void {
+    this.linhas.update(lista => lista.map(l => (l.uid === uid ? { ...l, ...campo } : l)));
+  }
+
+  itemDaLinha(linha: LinhaAtendimento): ItemCatalogo | undefined {
+    return this.itensDoTipo(linha.tipo).find(i => i.id === linha.idItem);
+  }
+
+  precoDaLinha(linha: LinhaAtendimento): number {
+    return this.itemDaLinha(linha)?.preco ?? 0;
+  }
+
+  erroLinha(linha: LinhaAtendimento): string {
+    if (!this.tentou()) return '';
+    if (!linha.idItem) return 'Selecione o item.';
+    const item = this.itemDaLinha(linha);
+    const erroQuantidade = validarQuantidade(linha.quantidade);
+    if (erroQuantidade) return erroQuantidade;
+    if (item?.tipoItem === 'P' && item.estoque !== undefined && linha.quantidade > item.estoque) {
+      return `Estoque insuficiente (${item.estoque} disponível).`;
+    }
+    return '';
   }
 
   salvar(): void {
-    this.mensagem.set('');
+    this.tentou.set(true);
     this.erro.set('');
+    this.mensagem.set('');
 
-    const cliente = this.clientes().find(item => item.id === this.clienteId());
-    const item = this.itensDisponiveis().find(registro => registro.id === this.itemId());
-    const idFuncionario = Number(this.funcionarioId);
+    const linhas = this.linhas();
+    const ids = linhas.map(l => l.idItem);
+    const duplicado = ids.some((id, i) => id !== null && ids.indexOf(id) !== i);
 
-    if (!cliente || !item || !this.data || !Number.isInteger(idFuncionario) || idFuncionario <= 0) {
-      this.erro.set('Selecione o cliente e o item, informe a data e um ID de funcionário válido.');
+    if (Object.keys(this.erros()).length > 0 || linhas.some(l => this.erroLinha(l))) {
+      this.erro.set('Corrija os campos destacados antes de registrar.');
       return;
     }
-    if (!Number.isInteger(this.quantidade) || this.quantidade <= 0) {
-      this.erro.set('A quantidade deve ser um número inteiro maior que zero.');
-      return;
-    }
-    if (this.categoriaItem() === 'Produto' && item.estoque !== undefined && item.estoque < this.quantidade) {
-      this.erro.set('A quantidade solicitada é maior que o estoque informado pela API.');
+    if (duplicado) {
+      this.erro.set('O mesmo item não pode aparecer duas vezes no atendimento. Ajuste a quantidade em uma única linha.');
       return;
     }
 
     this.salvando.set(true);
-    this.dadosApi.criarAtendimento({
-      idAtendimento: 0,
-      idPessoa: cliente.id,
-      dataAtendimento: this.data,
-      statusAtendimento: 'P',
-      itens: [{
-        idAtendimento: 0,
-        idItem: item.id,
-        idFuncionario,
-        quantidade: this.quantidade,
-        valorUnitario: item.preco
-      }]
+    this.pedidoService.criar({
+      idPessoa: Number(this.idCliente()),
+      dataAtendimento: this.data(),
+      itens: linhas.map(l => ({
+        idItem: Number(l.idItem),
+        idFuncionario: Number(this.idFuncionario()),
+        quantidade: l.quantidade,
+        valorUnitario: this.precoDaLinha(l)
+      }))
     }).pipe(finalize(() => this.salvando.set(false))).subscribe({
-      next: () => {
-        this.mensagem.set('Atendimento enviado à API.');
-        this.clienteId.set(null);
-        this.itemId.set(null);
-        this.funcionarioId = null;
-        this.quantidade = 1;
-        this.data = this.dataLocalAtual();
-        this.carregarAtendimentos();
+      next: pedido => {
+        this.mensagem.set(`Atendimento #${pedido.idAtendimento} registrado. Estoque atualizado.`);
+        this.limparFormulario();
+        this.atualizarLista();
       },
       error: erro => this.erro.set(mensagemErroApi(erro, 'registrar o atendimento'))
     });
+  }
+
+  limparFormulario(): void {
+    this.idCliente.set(null);
+    this.idFuncionario.set(null);
+    this.data.set(this.dataHoje());
+    this.linhas.set([this.novaLinha('S')]);
+    this.tentou.set(false);
   }
 
   formatarData(valor: string | undefined): string {
     if (!valor) return '—';
     const data = new Date(`${valor.substring(0, 10)}T00:00:00`);
     return Number.isNaN(data.getTime()) ? valor : data.toLocaleDateString('pt-BR');
-  }
-
-  formatarStatus(valor: string | null | undefined): string {
-    const status = String(valor ?? '').trim().toUpperCase();
-    if (status === 'P') return 'Pendente';
-    return status || 'Não informado';
   }
 
   formatarItens(atendimento: AtendimentoApi): string {
@@ -157,14 +197,17 @@ export class Atendimentos {
   }
 
   formatarFuncionarios(atendimento: AtendimentoApi): string {
-    return (atendimento.itens ?? []).map(item =>
-      item.nomeFuncionario || (item.idFuncionario ? `ID ${item.idFuncionario}` : 'Não informado')
-    ).filter((nome, indice, todos) => todos.indexOf(nome) === indice).join(', ') || '—';
+    const nomes = (atendimento.itens ?? []).map(item =>
+      item.nomeFuncionario || (item.idFuncionario ? `ID ${item.idFuncionario}` : 'Não informado'));
+    return [...new Set(nomes)].join(', ') || '—';
   }
 
-  private dataLocalAtual(): string {
+  rotuloStatus(atendimento: AtendimentoApi): string {
+    return this.pedidoService.rotuloStatus(atendimento.statusAtendimento);
+  }
+
+  dataHoje(): string {
     const agora = new Date();
-    const local = new Date(agora.getTime() - agora.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 10);
+    return new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   }
 }

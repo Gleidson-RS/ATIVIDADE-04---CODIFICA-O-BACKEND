@@ -1,0 +1,124 @@
+<section class="admin-page">
+  <header class="page-title-row">
+    <div>
+      <p class="eyebrow">Cadastros</p>
+      <h1>{{ rotuloPlural }}</h1>
+      <p class="page-description">
+        Cadastre, altere e ative ou desative {{ eProduto ? 'produtos' : 'serviços' }}.
+        {{ eProduto ? 'O estoque é controlado pelas entradas e pelas baixas automáticas dos pedidos.' : 'Serviços não possuem controle de estoque.' }}
+      </p>
+    </div>
+    <div class="form-actions">
+      @if (eProduto) { <a class="btn-outline" routerLink="/estoque">Ir para o estoque</a> }
+      <a class="btn-outline" routerLink="/portal">Voltar ao painel</a>
+    </div>
+  </header>
+
+  <section class="form-panel">
+    <h2>{{ editando() === null ? 'Novo ' + rotulo : 'Editar ' + rotulo }}</h2>
+    <form (ngSubmit)="salvar()" novalidate>
+      <div class="form-grid">
+        <label>Nome
+          <input name="nome" maxlength="40" [class.invalido]="erro('nome')"
+            [ngModel]="form().nome" (ngModelChange)="form.set({ ...form(), nome: $event })">
+          @if (erro('nome')) { <span class="field-error">{{ erro('nome') }}</span> }
+        </label>
+        <label>Categoria
+          <select name="categoria" [class.invalido]="erro('idCategoria')"
+            [ngModel]="form().idCategoria" (ngModelChange)="form.set({ ...form(), idCategoria: $event ? +$event : null })">
+            <option [ngValue]="null">Selecione uma categoria</option>
+            @for (categoria of categorias(); track categoria.id) {
+              <option [ngValue]="categoria.id">{{ categoria.nome }}</option>
+            }
+          </select>
+          @if (erro('idCategoria')) { <span class="field-error">{{ erro('idCategoria') }}</span> }
+        </label>
+        <label class="span-two">Descrição
+          <textarea name="descricao" rows="2" maxlength="200" [class.invalido]="erro('descricao')"
+            [ngModel]="form().descricao" (ngModelChange)="form.set({ ...form(), descricao: $event })"></textarea>
+          @if (erro('descricao')) { <span class="field-error">{{ erro('descricao') }}</span> }
+        </label>
+        <label>Preço (R$)
+          <input name="preco" type="number" min="0.01" step="0.01" [class.invalido]="erro('preco')"
+            [ngModel]="form().preco" (ngModelChange)="form.set({ ...form(), preco: $event === '' || $event === null ? null : +$event })">
+          @if (erro('preco')) { <span class="field-error">{{ erro('preco') }}</span> }
+        </label>
+        @if (eProduto) {
+          <label>Unidade de medida
+            <input name="unidade" maxlength="10" placeholder="UN, KG, CX..." [class.invalido]="erro('unidade')"
+              [ngModel]="form().unidade" (ngModelChange)="form.set({ ...form(), unidade: $event })">
+            @if (erro('unidade')) { <span class="field-error">{{ erro('unidade') }}</span> }
+          </label>
+        }
+        <label class="checkbox-field">
+          <input type="checkbox" name="ativo" [ngModel]="form().ativo" (ngModelChange)="form.set({ ...form(), ativo: $event })">
+          {{ capitalizarRotulo() }} ativo (aparece no catálogo)
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" [disabled]="salvando()">
+          {{ salvando() ? 'Salvando...' : (editando() === null ? 'Cadastrar ' + rotulo : 'Salvar alterações') }}
+        </button>
+        @if (editando() !== null) {
+          <button class="btn-outline" type="button" (click)="cancelar()">Cancelar edição</button>
+        }
+      </div>
+    </form>
+    @if (mensagem()) {
+      <p class="feedback" [class.feedback-error]="mensagemErro()" role="status">{{ mensagem() }}</p>
+    }
+  </section>
+
+  <section class="table-panel">
+    <div class="section-heading">
+      <div>
+        <h2>{{ rotuloPlural }} cadastrados</h2>
+        <p>{{ filtrados().length }} de {{ itens().length }} registro(s)</p>
+      </div>
+      <div class="filtros-inline">
+        <input class="search-input" type="search" name="busca" placeholder="Buscar por nome ou ID"
+          [ngModel]="busca()" (ngModelChange)="busca.set($event)">
+        <select name="filtroCategoria" [ngModel]="filtroCategoria()" (ngModelChange)="filtroCategoria.set($event)">
+          <option value="Todas">Todas as categorias</option>
+          @for (categoria of categorias(); track categoria.id) {
+            <option [value]="categoria.nome">{{ categoria.nome }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    @if (carregando()) { <p class="feedback" role="status">Carregando {{ rotuloPlural.toLowerCase() }}...</p> }
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Nome</th><th>Categoria</th><th>Preço</th>
+            @if (eProduto) { <th>Unidade</th><th>Estoque</th> }
+            <th>Status</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filtrados(); track item.id) {
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nome }}</td>
+              <td>{{ item.categoria }}</td>
+              <td>{{ item.preco | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+              @if (eProduto) {
+                <td>{{ item.unidade || '—' }}</td>
+                <td>{{ item.estoque ?? 'Não informado' }}</td>
+              }
+              <td><span class="status-pill" [class.status-inactive]="!item.ativo">{{ item.ativo ? 'Ativo' : 'Inativo' }}</span></td>
+              <td class="actions-cell">
+                <button class="btn-small" type="button" (click)="editar(item)">Editar</button>
+                <button class="btn-small" type="button" (click)="alternarAtivo(item)">{{ item.ativo ? 'Desativar' : 'Ativar' }}</button>
+                <button class="btn-small btn-danger" type="button" (click)="excluir(item)">Excluir</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="eProduto ? 8 : 6" class="empty-state">Nenhum {{ rotulo }} encontrado.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

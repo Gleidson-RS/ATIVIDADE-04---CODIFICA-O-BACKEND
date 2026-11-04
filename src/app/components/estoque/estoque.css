@@ -1,1 +1,45 @@
-/* O visual compartilhado das telas administrativas fica em styles.css. */
+.invalido {
+  border-color: #c0392b !important;
+}
+
+.resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.resumo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid #e2e7e2;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.resumo-card span {
+  color: #657066;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.resumo-card strong {
+  font-size: 22px;
+}
+
+.section-heading select {
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid #cfd8cf;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.status-pill.stock-low {
+  background: #fff6e5;
+  color: #8a5a00;
+}

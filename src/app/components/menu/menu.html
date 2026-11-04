@@ -36,6 +36,9 @@
 
       <div id="carrinho" routerLink="/carrinho">
         <strong>Carrinho</strong>
+        @if (carrinho.quantidadeTotal() > 0) {
+          <span class="badge-carrinho" [attr.aria-label]="carrinho.quantidadeTotal() + ' item(ns) no carrinho'">{{ carrinho.quantidadeTotal() }}</span>
+        }
       </div>
 
     </div>
@@ -49,6 +52,7 @@
       <li><a routerLink="/catalogo-produtos" routerLinkActive="ativo" class="lnk-menu">Produtos</a></li>
       <li><a routerLink="/catalogo-servicos" routerLinkActive="ativo" class="lnk-menu">Serviços</a></li>
       <li><a routerLink="/sobre" routerLinkActive="ativo" class="lnk-menu">Sobre</a></li>
+      <li><a routerLink="/carrinho" routerLinkActive="ativo" class="lnk-menu">Carrinho</a></li>
     </ul>
   </nav>
 

@@ -11,6 +11,11 @@ export class AdminAuth {
   private readonly _autenticado = signal(this.lerSessao());
   readonly autenticado = this._autenticado.asReadonly();
 
+  /** Confere a senha de funcionário sem abrir a sessão do portal (usado no checkout). */
+  conferirSenha(senha: string): boolean {
+    return senha === this.senhaAdmin;
+  }
+
   entrar(senha: string): boolean {
     if (senha !== this.senhaAdmin) return false;
     sessionStorage.setItem(this.chave, '1');

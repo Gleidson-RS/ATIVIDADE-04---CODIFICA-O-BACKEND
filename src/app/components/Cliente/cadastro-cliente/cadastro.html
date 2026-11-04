@@ -7,50 +7,62 @@
 
       <div class="input-group">
         <label for="nome">Nome completo</label>
-        <input
+        <input [class.invalido]="!!erroCampo('nome')"
           type="text"
           id="nome"
           name="nome"
           [(ngModel)]="nome"
           placeholder="Digite seu nome completo"
         >
+        @if (erroCampo('nome')) {
+          <span class="field-error">{{ erroCampo('nome') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="email">E-mail</label>
-        <input
+        <input [class.invalido]="!!erroCampo('email')"
           type="email"
           id="email"
           name="email"
           [(ngModel)]="email"
           placeholder="Digite seu e-mail"
         >
+        @if (erroCampo('email')) {
+          <span class="field-error">{{ erroCampo('email') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="CPF">CPF</label>
-        <input
+        <input [class.invalido]="!!erroCampo('CPF')"
           type="text"
           id="CPF"
           name="CPF"
           [(ngModel)]="CPF"
           placeholder="informe seu CPF (somente números)"
         >
+        @if (erroCampo('CPF')) {
+          <span class="field-error">{{ erroCampo('CPF') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="datanascimento">Data de nascimento</label>
-        <input
+        <input [class.invalido]="!!erroCampo('datanascimento')"
           type="date"
           id="datanascimento"
           name="datanascimento"
           [(ngModel)]="datanascimento"
         >
+        @if (erroCampo('datanascimento')) {
+          <span class="field-error">{{ erroCampo('datanascimento') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="sexo">Sexo</label>
-        <select
+        <select [class.invalido]="!!erroCampo('sexo')"
           id="sexo"
           name="sexo"
           [(ngModel)]="sexo"
@@ -60,39 +72,51 @@
           <option value="F">Feminino</option>
           <option value="O">Outro</option>
         </select>
+        @if (erroCampo('sexo')) {
+          <span class="field-error">{{ erroCampo('sexo') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="telefone">Telefone</label>
-        <input
+        <input [class.invalido]="!!erroCampo('telefone')"
           type="tel"
           id="telefone"
           name="telefone"
           [(ngModel)]="telefone"
           placeholder="(79) 99999-9999"
         >
+        @if (erroCampo('telefone')) {
+          <span class="field-error">{{ erroCampo('telefone') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="CEP">CEP</label>
-        <input
+        <input [class.invalido]="!!erroCampo('CEP')"
         type="text"
         id="CEP"
         name="CEP"
         [(ngModel)]="CEP"
         placeholder="49000-000"
         >
+        @if (erroCampo('CEP')) {
+          <span class="field-error">{{ erroCampo('CEP') }}</span>
+        }
       </div>
 
       <div class="input-group">
         <label for="Numero">Número do endereço</label>
-        <input
+        <input [class.invalido]="!!erroCampo('Numero')"
           type="text"
           id="Numero"
           name="Numero"
           [(ngModel)]="Numero"
           placeholder="Número da residência"
         >
+        @if (erroCampo('Numero')) {
+          <span class="field-error">{{ erroCampo('Numero') }}</span>
+        }
       </div>
 
       <div class="input-group">

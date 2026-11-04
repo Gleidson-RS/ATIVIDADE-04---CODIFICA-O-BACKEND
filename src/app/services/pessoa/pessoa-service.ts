@@ -1,9 +1,23 @@
-
 import { Injectable } from '@angular/core';
 import { Pessoas } from '../../models/pessoas/pessoa';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { somenteDigitos } from '../../shared/validadores';
+
+// O CPF é gravado como número (bigint): zeros à esquerda somem e precisam ser recompostos.
+function normalizarCpf(valor: unknown): string {
+  const digitos = somenteDigitos(valor);
+  return digitos ? digitos.padStart(11, '0') : '';
+}
+
+/** Pessoa resumida para listas de seleção (funcionário, cliente do pedido). */
+export interface PessoaResumo {
+  id: number;
+  nome: string;
+  cpf: string;
+  email: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +30,21 @@ export class PessoaService {
 
   listarPessoas(): Observable<Pessoas[]> {
     return this.http.get<Pessoas[]>(this.apiUrl);
+  }
+
+  /** Lista resumida e ordenada por nome, usando o id que a API devolve (idPessoa). */
+  listarResumo(): Observable<PessoaResumo[]> {
+    return this.listarPessoas().pipe(
+      map(lista => ((lista ?? []) as any[])
+        .map(p => ({
+          id: Number(p.idPessoa ?? p.id ?? p.IdPessoa ?? 0),
+          nome: String(p.nome ?? ''),
+          cpf: normalizarCpf(p.cpf ?? p.CPF),
+          email: String(p.email ?? '')
+        }))
+        .filter(p => p.id > 0)
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')))
+    );
   }
 
   listarPessoa(id: number): Observable<Pessoas> {

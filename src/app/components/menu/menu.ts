@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { LoginService } from '../../services/login/login';
+import { CarrinhoService } from '../../services/carrinho/carrinho-service';
 
 @Component({
   imports: [RouterLink, RouterLinkActive],
@@ -11,6 +12,7 @@ import { LoginService } from '../../services/login/login';
 export class Menu {
   private loginService = inject(LoginService);
   private router = inject(Router);
+  readonly carrinho = inject(CarrinhoService);
 
   usuario = this.loginService.pessoaLogada;
 

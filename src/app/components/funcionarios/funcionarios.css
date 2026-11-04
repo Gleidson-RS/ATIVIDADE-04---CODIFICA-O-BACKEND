@@ -1,1 +1,3 @@
-/* O visual compartilhado das telas administrativas fica em styles.css. */
+.invalido {
+  border-color: #c0392b !important;
+}

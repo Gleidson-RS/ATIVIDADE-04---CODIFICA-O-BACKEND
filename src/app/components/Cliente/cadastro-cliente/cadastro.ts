@@ -5,7 +5,7 @@ import { finalize } from 'rxjs';
 import { PessoaService } from '../../../services/pessoa/pessoa-service';
 import { Pessoas } from '../../../models/pessoas/pessoa';
 import { Enderecos } from '../../../models/enderecos/enderecos';
-import { somenteDigitos } from '../../../shared/validadores';
+import { somenteDigitos, validarCliente } from '../../../shared/validadores';
 import { mensagemErroApi } from '../../../shared/erro-api';
 
 @Component({
@@ -35,14 +35,28 @@ export class Cadastro {
 
   readonly hoje = new Date().toISOString().substring(0, 10);
 
+  // Mostra as mensagens de cada campo depois da primeira tentativa de envio.
+  tentou = signal(false);
+
   constructor(private pessoaService: PessoaService) { }
+
+  erroCampo(campo: string): string {
+    if (!this.tentou()) return '';
+    return validarCliente(this)[campo] ?? '';
+  }
 
   cadastrar(): void {
     if (this.enviando()) return;
 
     this.mensagem.set('');
+    this.tentou.set(true);
 
-    // Sem verificações (modo de teste): CPF/dados repetidos são enviados normalmente.
+    if (Object.keys(validarCliente(this)).length > 0) {
+      this.erroGeral.set(true);
+      this.mensagem.set('Corrija os campos destacados antes de cadastrar.');
+      return;
+    }
+
     const pessoa = new Pessoas();
     pessoa.nome = this.nome.trim();
     pessoa.CPF = somenteDigitos(this.CPF);
@@ -65,6 +79,7 @@ export class Cadastro {
       .subscribe({
         next: () => {
           this.limparFormulario();
+          this.tentou.set(false);
           this.erroGeral.set(false);
           this.mensagem.set('Cadastro realizado com sucesso!');
         },
