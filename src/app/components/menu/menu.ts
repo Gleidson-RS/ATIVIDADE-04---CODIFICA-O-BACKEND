@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { LoginService } from '../../services/login/login';
 import { CarrinhoService } from '../../services/carrinho/carrinho-service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   imports: [RouterLink, RouterLinkActive],
@@ -20,4 +21,27 @@ export class Menu {
     this.loginService.encerrarSessao();
     this.router.navigate(['/login']);
   }
+
+
+private readonly documento = inject(DOCUMENT);
+
+girarPagina(): void {
+  const aplicacao = this.documento.querySelector('app-root');
+
+  if (!aplicacao) return;
+
+  aplicacao.classList.remove('giro-360');
+
+  // Reinicia a animação para permitir novos cliques.
+  void aplicacao.getBoundingClientRect();
+
+  aplicacao.classList.add('giro-360');
+
+  aplicacao.addEventListener(
+    'animationend',
+    () => aplicacao.classList.remove('giro-360'),
+    { once: true }
+  );
+}
+
 }

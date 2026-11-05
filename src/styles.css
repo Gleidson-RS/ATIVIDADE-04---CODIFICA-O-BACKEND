@@ -388,3 +388,131 @@ button, input, select, textarea {
     padding: 16px;
   }
 }
+
+
+/* =================================
+   RODAPÉ GLOBAL
+================================= */
+
+.rodape-global {
+  width: 100%;
+  padding: 40px 8% 18px;
+  background: #17221b;
+  color: #fff;
+}
+
+.rodape-conteudo {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 30px;
+}
+
+.rodape-marca h2 {
+  margin: 0 0 12px;
+  font-size: 25px;
+}
+
+.rodape-marca h2 span {
+  color: #c4d5c7;
+}
+
+.rodape-marca p,
+.rodape-final {
+  color: #c6d0c8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.rodape-links,
+.rodape-informacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rodape-links h3,
+.rodape-informacoes h3 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+
+.rodape-links a,
+.rodape-informacoes a {
+  width: fit-content;
+  color: #c6d0c8;
+  font-size: 13px;
+  text-decoration: none;
+  transition: .2s;
+}
+
+.rodape-links a:hover,
+.rodape-informacoes a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.rodape-final {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  border-top: 1px solid #435248;
+}
+
+.rodape-final p {
+  margin: 0;
+}
+
+@media (max-width: 650px) {
+  .rodape-conteudo {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .rodape-marca {
+    grid-column: 1 / -1;
+  }
+
+  .rodape-final {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .rodape-global {
+    padding: 30px 6% 18px;
+  }
+}
+
+
+
+/* =================================
+   EASTER EGG - GIRO DE 360 GRAUS
+================================= */
+
+app-root.giro-360 {
+  display: block;
+  transform-origin: center center;
+  animation: giro-completo 1.1s ease-in-out;
+}
+
+@keyframes giro-completo {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-root.giro-360 {
+    animation-duration: 0.01ms;
+  }
+}

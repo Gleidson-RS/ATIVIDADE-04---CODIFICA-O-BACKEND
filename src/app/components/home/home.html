@@ -1,93 +1,112 @@
 <main class="home-container">
-  <!-- Secção Hero (Estilo Nike: Impacto e Minimalismo) -->
+
+  <!-- Apresentação principal -->
   <section class="hero-banner">
     <div class="hero-content">
-      <h1>Performance Sem Limites</h1>
-      <p>Descobre a nova coleção de desporto e eleva o teu treino.</p>
-      <button class="btn-hero" routerLink="/catalogo-produtos">Comprar Agora</button>
+      <span class="home-eyebrow">BEM-VINDO À PRODUTOS ESPORTE</span>
+
+      <h1>Cuidado, beleza e bem-estar em um só lugar.</h1>
+
+      <p>
+        Descubra nossos produtos e serviços. Encontre tudo o que precisa
+        para cuidar de você com praticidade e qualidade.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/catalogo-produtos" class="btn-hero">
+          Explorar produtos
+        </a>
+
+        <a routerLink="/catalogo-servicos" class="btn-hero-secundario">
+          Conhecer serviços
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-destaque">
+      <span class="destaque-numero">01</span>
+      <div class="destaque-conteudo">
+        <span>PRODUTOS ESPORTE</span>
+        <h2>Um espaço pensado para você.</h2>
+        <p>Produtos, serviços e praticidade em uma só loja.</p>
+      </div>
+      <div class="destaque-circulo"></div>
     </div>
   </section>
 
-  <!-- Secção de Categorias Rápidas (Estilo Mercado Livre: Funcionalidade) -->
-  <section class="categories-section">
-    <h2>Comprar por Categoria</h2>
-    <div class="categories-grid">
-      <a class="category-card" routerLink="/catalogo-produtos">
-        <div class="category-placeholder">👟</div>
-        <span>Calçado</span>
+  <!-- Acesso rápido -->
+  <section class="atalhos-section">
+    <div class="section-heading">
+      <div>
+        <span class="home-eyebrow">EXPLORE</span>
+        <h2>O que você procura?</h2>
+        <p>Encontre rapidamente o que deseja.</p>
+      </div>
+    </div>
+
+    <div class="atalhos-grid">
+
+      <a routerLink="/catalogo-produtos" class="atalho-card">
+        <span class="atalho-numero">01</span>
+        <div class="atalho-icone">✦</div>
+        <h3>Nossos produtos</h3>
+        <p>Conheça os produtos disponíveis em nosso catálogo.</p>
+        <span class="atalho-link">Ver produtos →</span>
       </a>
-      <a class="category-card" routerLink="/catalogo-produtos">
-        <div class="category-placeholder">👕</div>
-        <span>Vestuário</span>
+
+      <a routerLink="/catalogo-servicos" class="atalho-card">
+        <span class="atalho-numero">02</span>
+        <div class="atalho-icone">◇</div>
+        <h3>Nossos serviços</h3>
+        <p>Descubra os serviços disponíveis e encontre o ideal para você.</p>
+        <span class="atalho-link">Ver serviços →</span>
       </a>
-      <a class="category-card" routerLink="/catalogo-produtos">
-        <div class="category-placeholder">🎒</div>
-        <span>Acessórios</span>
+
+      <a routerLink="/sobre" class="atalho-card">
+        <span class="atalho-numero">03</span>
+        <div class="atalho-icone">◎</div>
+        <h3>Sobre a loja</h3>
+        <p>Conheça um pouco mais sobre nossa loja e nossa proposta.</p>
+        <span class="atalho-link">Conhecer →</span>
       </a>
-      <a class="category-card" routerLink="/catalogo-produtos">
-        <div class="category-placeholder">⚽</div>
-        <span>Equipamento</span>
-      </a>
+
     </div>
   </section>
 
-  <!-- Secção de Ofertas (Estilo Mercado Livre: Foco em Preço e Conversão) -->
-  <section class="offers-section">
-    <h2>Ofertas do Dia</h2>
-    <div class="products-grid">
-      
-      <!-- Cartão de Produto 1 -->
-      <article class="product-card">
-        <div class="product-image-box">
-          <!-- Espaço para a imagem real do produto -->
-          <span class="discount-badge">-20%</span>
-        </div>
-        <div class="product-details">
-          <h3 class="product-title">Sapatilhas Running Pro Max</h3>
-          <p class="product-price">
-            <span class="old-price">120,00 €</span>
-            <span class="current-price">96,00 €</span>
-          </p>
-          <p class="shipping-info">Envio grátis</p>
-        </div>
+  <!-- Como comprar -->
+  <section class="como-comprar">
+    <div class="como-comprar-texto">
+      <span class="home-eyebrow">SIMPLES E PRÁTICO</span>
+      <h2>Comprar ficou mais fácil.</h2>
+      <p>
+        Escolha seus produtos ou serviços, adicione ao carrinho
+        e acompanhe seu pedido em poucos passos.
+      </p>
+
+      <a routerLink="/catalogo-produtos" class="btn-comprar">
+        Começar a comprar
+      </a>
+    </div>
+
+    <div class="passos-grid">
+      <article class="passo-card">
+        <span>01</span>
+        <h3>Escolha</h3>
+        <p>Explore nossos produtos e serviços.</p>
       </article>
 
-      <!-- Cartão de Produto 2 -->
-      <article class="product-card">
-        <div class="product-image-box"></div>
-        <div class="product-details">
-          <h3 class="product-title">T-shirt DryFit Essentials</h3>
-          <p class="product-price">
-            <span class="current-price">24,99 €</span>
-          </p>
-          <p class="shipping-info">Envio grátis</p>
-        </div>
+      <article class="passo-card">
+        <span>02</span>
+        <h3>Adicione</h3>
+        <p>Coloque seus itens no carrinho.</p>
       </article>
 
-      <!-- Cartão de Produto 3 -->
-      <article class="product-card">
-        <div class="product-image-box"></div>
-        <div class="product-details">
-          <h3 class="product-title">Calções de Treino Elite</h3>
-          <p class="product-price">
-            <span class="current-price">35,00 €</span>
-          </p>
-          <p class="shipping-info">Chega amanhã</p>
-        </div>
+      <article class="passo-card">
+        <span>03</span>
+        <h3>Finalize</h3>
+        <p>Confira seu pedido e conclua a compra.</p>
       </article>
-
-      <!-- Cartão de Produto 4 -->
-      <article class="product-card">
-        <div class="product-image-box"></div>
-        <div class="product-details">
-          <h3 class="product-title">Mochila Desportiva 30L</h3>
-          <p class="product-price">
-            <span class="current-price">45,50 €</span>
-          </p>
-          <p class="shipping-info">Chega amanhã</p>
-        </div>
-      </article>
-
     </div>
   </section>
+
 </main>

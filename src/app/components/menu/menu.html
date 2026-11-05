@@ -2,9 +2,17 @@
 
   <div class="linha-superior">
 
-    <div id="logo" routerLink="/home" style="cursor: pointer;">
-      Produtos <span id="titulo-logo"> Esporte </span>
-    </div>
+  <div id="logo" routerLink="/home" style="cursor: pointer;">
+  Produtos
+
+    <button
+      id="titulo-logo"
+      type="button"
+      aria-label="Surpresa: girar a página"
+      (click)="$event.stopPropagation(); girarPagina()">
+      Esporte
+    </button>
+  </div>
 
     <div id="pesquisa">
       <input type="text" placeholder="O que está buscando?">
