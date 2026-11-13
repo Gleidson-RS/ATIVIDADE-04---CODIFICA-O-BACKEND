@@ -7,3 +7,4 @@ import { Component } from '@angular/core';
   templateUrl: './sobre.html',
 })
 export class Sobre {}
+console.log("Sobre carregado com sucesso");

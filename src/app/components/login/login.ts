@@ -74,3 +74,4 @@ export class Login {
       });
   }
 }
+console.log("Login carregado com sucesso");

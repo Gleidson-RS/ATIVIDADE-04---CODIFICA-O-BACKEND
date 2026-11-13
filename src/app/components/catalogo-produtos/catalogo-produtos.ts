@@ -13,13 +13,16 @@ import { TipoItem } from '../../models/gestao/gestao';
 })
 export class CatalogoProdutos extends CatalogoBase {
   protected readonly tipo: TipoItem = 'P';
-
+  
   constructor() {
     super();
     this.atualizar();
   }
-
+  
   definirOrdenacao(valor: string): void {
     this.ordenacao.set(valor as OrdenacaoCatalogo);
   }
+
 }
+
+  console.log ("CatalogoProdutos carregado com sucesso");

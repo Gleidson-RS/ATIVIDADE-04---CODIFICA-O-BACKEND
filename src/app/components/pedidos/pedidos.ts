@@ -126,3 +126,4 @@ export class Pedidos {
     this.mensagemErro.set(true);
   }
 }
+console.log("Pedidos carregado com sucesso");

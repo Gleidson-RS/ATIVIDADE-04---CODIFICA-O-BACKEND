@@ -124,3 +124,5 @@ export class Categorias {
     this.mensagemErro.set(true);
   }
 }
+
+  console.log ("Categorias carregado com sucesso");

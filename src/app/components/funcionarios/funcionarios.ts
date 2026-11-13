@@ -174,3 +174,4 @@ export class Funcionarios {
     this.mensagemErro.set(true);
   }
 }
+console.log("Funcionarios carregado com sucesso");

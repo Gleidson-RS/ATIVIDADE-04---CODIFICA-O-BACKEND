@@ -23,3 +23,5 @@ export class CatalogoServicos extends CatalogoBase {
     this.ordenacao.set(valor as OrdenacaoCatalogo);
   }
 }
+
+  console.log ("CatalogoServicos carregado com sucesso");

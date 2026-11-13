@@ -163,3 +163,5 @@ export class EditarCliente implements OnInit {
       });
   }
 }
+
+console.log("Editar-Cliente carregado com sucesso");

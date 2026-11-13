@@ -63,3 +63,4 @@ export class ConsultarCliente implements OnInit {
     });
   }
 }
+console.log("Consultar-Cliente carregado com sucesso");

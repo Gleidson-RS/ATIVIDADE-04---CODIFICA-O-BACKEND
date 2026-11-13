@@ -38,6 +38,11 @@
             [ngModel]="form().descricao" (ngModelChange)="form.set({ ...form(), descricao: $event })"></textarea>
           @if (erro('descricao')) { <span class="field-error">{{ erro('descricao') }}</span> }
         </label>
+
+        <input type="file" id="imagem" accept="image/*">
+
+        <button onclick="enviarImagem()">Enviar imagem</button>
+
         <label>Preço (R$)
           <input name="preco" type="number" min="0.01" step="0.01" [class.invalido]="erro('preco')"
             [ngModel]="form().preco" (ngModelChange)="form.set({ ...form(), preco: $event === '' || $event === null ? null : +$event })">

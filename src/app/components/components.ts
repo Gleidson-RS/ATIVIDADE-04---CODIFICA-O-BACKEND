@@ -7,3 +7,4 @@ import { Component } from '@angular/core';
   templateUrl: './components.html',
 })
 export class Components {}
+console.log("Components carregado com sucesso");

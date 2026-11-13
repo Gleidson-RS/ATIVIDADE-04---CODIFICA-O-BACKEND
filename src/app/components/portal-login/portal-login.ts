@@ -37,3 +37,4 @@ export class PortalLogin {
     this.router.navigateByUrl(destino);
   }
 }
+console.log("Portal-Login carregado com sucesso");

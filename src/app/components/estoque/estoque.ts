@@ -139,3 +139,4 @@ export class Estoque {
     this.mensagemErro.set(true);
   }
 }
+console.log("Estoque carregado com sucesso");

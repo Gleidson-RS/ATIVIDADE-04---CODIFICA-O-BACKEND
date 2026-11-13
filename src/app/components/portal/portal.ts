@@ -131,3 +131,4 @@ export class Portal {
     return new Date(agora.getTime() - agora.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   }
 }
+console.log("Portal carregado com sucesso");

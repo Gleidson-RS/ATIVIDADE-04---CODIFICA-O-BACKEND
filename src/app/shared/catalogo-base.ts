@@ -52,31 +52,32 @@ export abstract class CatalogoBase {
     this.carregando.set(true);
     this.erro.set('');
     this.itemService.listar(this.tipo)
-      .pipe(finalize(() => this.carregando.set(false)))
-      .subscribe({
-        next: itens => this.itens.set(itens),
-        error: erro => this.erro.set(mensagemErroApi(erro, `carregar o catálogo de ${this.tipo === 'P' ? 'produtos' : 'serviços'}`))
+    .pipe(finalize(() => this.carregando.set(false)))
+    .subscribe({
+      next: itens => this.itens.set(itens),
+      error: erro => this.erro.set(mensagemErroApi(erro, `carregar o catálogo de ${this.tipo === 'P' ? 'produtos' : 'serviços'}`))
       });
+    }
+    
+    limparFiltros(): void {
+      this.busca.set('');
+      this.categoria.set('Todas');
+      this.ordenacao.set('nome');
+    }
+    
+    adicionarAoCarrinho(item: ItemCatalogo): void {
+      const resultado = this.carrinho.adicionar(item, 1);
+      this.aviso.set(resultado.mensagem);
+      this.avisoErro.set(!resultado.ok);
+    }
+    
+    estoqueTexto(item: ItemCatalogo): string {
+      if (item.estoque === undefined) return 'Estoque não informado';
+      return item.estoque > 0 ? `${item.estoque} em estoque` : 'Sem estoque';
+    }
+    
+    podeComprar(item: ItemCatalogo): boolean {
+      return item.ativo && (item.tipoItem === 'S' || item.estoque === undefined || item.estoque > 0);
+    }
   }
-
-  limparFiltros(): void {
-    this.busca.set('');
-    this.categoria.set('Todas');
-    this.ordenacao.set('nome');
-  }
-
-  adicionarAoCarrinho(item: ItemCatalogo): void {
-    const resultado = this.carrinho.adicionar(item, 1);
-    this.aviso.set(resultado.mensagem);
-    this.avisoErro.set(!resultado.ok);
-  }
-
-  estoqueTexto(item: ItemCatalogo): string {
-    if (item.estoque === undefined) return 'Estoque não informado';
-    return item.estoque > 0 ? `${item.estoque} em estoque` : 'Sem estoque';
-  }
-
-  podeComprar(item: ItemCatalogo): boolean {
-    return item.ativo && (item.tipoItem === 'S' || item.estoque === undefined || item.estoque > 0);
-  }
-}
+  console.log ("CatalogoBase.ts carregado com sucesso");

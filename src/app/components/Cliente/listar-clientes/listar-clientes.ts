@@ -116,3 +116,4 @@ export class ListarClientes implements OnInit {
     });
   }
 }
+console.log("Listar-Clientes carregado com sucesso");

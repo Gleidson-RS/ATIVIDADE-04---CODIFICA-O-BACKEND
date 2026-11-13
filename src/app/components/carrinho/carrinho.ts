@@ -190,3 +190,4 @@ export class Carrinho {
     this.mensagemErro.set(true);
   }
 }
+console.log("Carrinho carregado com sucesso");

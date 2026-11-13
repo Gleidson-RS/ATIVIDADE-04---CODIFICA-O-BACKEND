@@ -105,3 +105,4 @@ export class Cadastro {
     this.Complemento = '';
   }
 }
+console.log("Cadastro-Cliente carregado com sucesso");
